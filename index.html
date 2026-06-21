@@ -738,11 +738,11 @@ async function refreshAOTD() {
     const d = await apiGet('https://dog.ceo/api/breeds/image/random');
     if (d) { imgUrl = d.message; name = 'Random Dog'; fact = facts.dogs[Math.floor(Math.random() * facts.dogs.length)]; }
   } else if (type === 'cats') {
-    const c = await apiGet('https://shibe.online/api/cats?count=1');
+    const c = await apiGet('https://shibe.online/api/cats?count=1&urls=true&httpsUrls=true');
     const cf = await apiGet('https://catfact.ninja/fact');
-    if (c) { imgUrl = c[0]; name = 'Random Cat'; fact = cf ? cf.fact : facts.cats[Math.floor(Math.random() * facts.cats.length)]; }
+    if (c && c[0]) { imgUrl = c[0]; name = 'Random Cat'; fact = cf ? cf.fact : facts.cats[Math.floor(Math.random() * facts.cats.length)]; }
   } else if (type === 'birds') {
-    const b = await apiGet('https://shibe.online/api/birds?count=1');
+    const b = await apiGet('https://shibe.online/api/birds?count=1&urls=true&httpsUrls=true');
     if (b) { imgUrl = b[0]; name = 'Random Bird'; fact = facts.birds[Math.floor(Math.random() * facts.birds.length)]; }
   }
   if (!imgUrl) {
@@ -798,10 +798,10 @@ async function openCategory(type) {
     else { showFallback('dogs'); }
   } else if (type === 'cats') {
     const [c, cf] = await Promise.all([
-      apiGet('https://shibe.online/api/cats?count=1'),
+      apiGet('https://shibe.online/api/cats?count=1&urls=true&httpsUrls=true'),
       apiGet('https://catfact.ninja/fact')
     ]);
-    if (c) {
+    if (c && c[0]) {
       setModalImg(c[0]);
       title.textContent = '🐈 ' + (i18n[currentLang].cat_cats || 'Cat');
       sub.textContent = 'Professional napper';
@@ -810,10 +810,17 @@ async function openCategory(type) {
     } else { showFallback('cats'); }
   } else if (type === 'birds') {
     const [b, xc] = await Promise.all([
-      apiGet('https://shibe.online/api/birds?count=1'),
-      apiGet('https://xeno-canto.org/api/2/recordings?query=song&page=1')
+      apiGet('https://shibe.online/api/birds?count=1&urls=true&httpsUrls=true'),
+      (async () => {
+        // ponytail: xeno-canto has no CORS, use corsproxy. If proxy fails, fallback silently.
+        try {
+          const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1'), { mode: 'cors' });
+          if (!r.ok) return null;
+          return await r.json();
+        } catch { return null; }
+      })()
     ]);
-    if (b) {
+    if (b && b[0]) {
       setModalImg(b[0]);
       title.textContent = '🐦 ' + (i18n[currentLang].cat_birds || 'Bird');
       sub.textContent = 'Sky dancer';
@@ -833,7 +840,8 @@ async function openCategory(type) {
     const f = await apiGet('https://www.fishwatch.gov/api/species');
     if (f && f.length > 0) {
       const species = f[Math.floor(Math.random() * f.length)];
-      setModalImg(species['Species Illustration Photo']?.src || '');
+      const photo = species['Species Illustration Photo']?.src;
+      if (photo) { setModalImg(photo); } else { placeholder.textContent = '🐟'; }
       title.textContent = '🐟 ' + (species['Species Name'] || 'Fish');
       sub.textContent = species['Habitat'] || 'Ocean dweller';
       factsDiv.innerHTML = '<p class="fact">• ' + (species['Biology'] || facts.fish[Math.floor(Math.random() * facts.fish.length)]) + '</p>';
