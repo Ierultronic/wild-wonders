@@ -577,7 +577,17 @@ const facts = {
     'A dog\'s sense of smell is 40x better than a human\'s.',
     'When dogs kick after pooping, they\'re leaving a scent message.',
     'Puppies are born blind and deaf — they find mom by touch.',
-    'Dogs dream just like humans do.'
+    'Dogs dream just like humans do.',
+    'The Labrador Retriever has been America\'s favorite dog for 30+ years.',
+    'A dog\'s hearing is 10x sharper than a human\'s.',
+    'Dogs can detect diseases like cancer by scent.',
+    'The oldest known dog lived to be 29 years old.',
+    'Dogs have about 1,700 taste buds (humans have 9,000).',
+    'A dog wags its tail to the right when happy, left when nervous.',
+    'Dogs curl up to sleep to protect their organs from predators.',
+    'The Basenji dog doesn\'t bark — it yodels.',
+    'Dogs can see in the dark better than humans.',
+    'A dog\'s whiskers help them sense things in the dark.'
   ],
   cats: [
     'Cats sleep about 70% of their lives — that\'s 16 hours a day.',
@@ -586,7 +596,18 @@ const facts = {
     'Each cat\'s nose has a unique pattern, like a fingerprint.',
     'A cat that\'s falling always lands on its feet — it\'s called the "righting reflex."',
     'Cats have 32 muscles in each ear, so they can rotate them 180°.',
-    'Ancient Egyptians thought cats were magical — hurting one was a crime.'
+    'Ancient Egyptians thought cats were magical — hurting one was a crime.',
+    'A cat has 244 bones in its body (humans have 206).',
+    'Cats spend 70% of their lives sleeping — they\'re professional nappers.',
+    'The world\'s richest cat had a fortune of £7 million.',
+    'Cats can drink seawater — their kidneys can filter out the salt.',
+    'A cat\'s brain is 90% similar to a human\'s brain.',
+    'Cats sweat through their paw pads.',
+    'The record for the longest cat is 48.5 inches long.',
+    'Cats can make over 100 different sounds.',
+    'A group of cats is called a clowder.',
+    'Cats walk like camels and giraffes — both right feet then both left.',
+    'House cats share 95.6% of their DNA with tigers.'
   ],
   birds: [
     'Some birds can mimic human speech — parrots are the champs.',
@@ -596,7 +617,17 @@ const facts = {
     'Penguins propose to their mates with a pebble.',
     'A group of flamingos is called a "flamboyance."',
     'The fastest bird is the peregrine falcon — it dives at 389 km/h.',
-    'Crows can remember human faces for years.'
+    'Crows can remember human faces for years.',
+    'Birds have a special organ called a "syrinx" to sing complex songs.',
+    'A parrot can live up to 80 years — longer than most dogs.',
+    'The Arctic tern flies from pole to pole every year — that\'s 70,000 km.',
+    'Penguins have super soft feathers that keep them warm and dry.',
+    'Owls have silent flight — their special feathers muffle the sound.',
+    'A chicken once lived for 18 months without its head.',
+    'Birds see colors that humans can\'t see — they see ultraviolet!',
+    'The kiwi bird has nostrils at the tip of its beak.',
+    'Pigeons can recognize themselves in a mirror.',
+    'The wandering albatross has the largest wingspan of any bird — 3.5 meters.'
   ],
   fish: [
     'Fish have been swimming on Earth for over 500 million years.',
@@ -605,7 +636,18 @@ const facts = {
     'Some fish can produce light using a special organ.',
     'The whale shark is the biggest fish in the ocean — as big as a bus.',
     'Fish use their swim bladder to float up and down without paddling.',
-    'A parrotfish produces sand when it poops — yes, it poops beaches.'
+    'A parrotfish produces sand when it poops — yes, it poops beaches.',
+    'Goldfish can remember things for months, not just 3 seconds.',
+    'A fish\'s heart has only two chambers (human hearts have four).',
+    'The mudskipper is a fish that can walk on land.',
+    'Some fish can change color to blend in — like chameleons.',
+    'The fastest fish is the sailfish — it swims at 110 km/h.',
+    'Fish have been in space! They went to the moon on Apollo missions.',
+    'A pufferfish expands to look bigger — it\'s the fish version of a balloon.',
+    'The archerfish can shoot water at bugs to knock them into the water.',
+    'Fish scales have growth rings like tree trunks — you can count their age.',
+    'Catfish have over 100,000 taste buds all over their body.',
+    'Seahorses are the only fish that swim upright.'
   ],
   endangered: [
     'Elephants are losing their habitats because of farming and development.',
@@ -614,18 +656,40 @@ const facts = {
     'There are fewer than 4,000 tigers left in the wild.',
     'Rhinos are poached for their horns — which are made of keratin, same as our fingernails.',
     'Polar bears depend on sea ice to hunt — and the ice is melting.',
-    'The vaquita porpoise has fewer than 10 individuals left.'
+    'The vaquita porpoise has fewer than 10 individuals left.',
+    'Palm oil plantations destroy orangutan habitats every single day.',
+    'The koala could be functionally extinct by 2050.',
+    'Deforestation is the biggest threat to 80% of endangered species.',
+    'There are only about 1,800 giant pandas left in the wild.',
+    'Climate change is the biggest threat to polar bears\' survival.',
+    'Many sea turtles die because they eat plastic floating in the ocean.',
+    'Sumatran elephants could be gone in 30 years at the current rate.',
+    'The African forest elephant helps plant trees by spreading seeds.',
+    'Rhinos have been around for 50 million years — but might not survive this century.',
+    'Every piece of recycled paper helps save animal habitats.',
+    'Even small actions like turning off lights help protect endangered species.'
   ]
 };
 
-// ponytail: single reliable image source for ALL categories. Wikipedia API is free, CORS-yes, no key.
-const wikiPages = {
-  dogs: ['Dog', 'Golden_Retriever', 'Labrador_Retriever', 'German_Shepherd', 'Poodle', 'Beagle', 'Siberian_Husky'],
-  cats: ['Cat', 'Siamese_cat', 'Persian_cat', 'Maine_Coon', 'Bengal_cat', 'Ragdoll', 'Sphynx_cat'],
-  birds: ['Bird', 'Parrot', 'Eagle', 'Penguin', 'Hummingbird', 'Owl', 'Flamingo', 'Peacock'],
-  fish: ['Fish', 'Clownfish', 'Goldfish', 'Angelfish', 'Betta', 'Guppy', 'Neon_tetra'],
-  endangered: ['Sumatran_elephant', 'Sea_turtle', 'Orangutan', 'Amur_leopard', 'Vaquita', 'Polar_bear', 'Tiger']
+// ponytail: Wikipedia search API gives unlimited random animal pages per category. Hardcoded fallback only.
+const wikiQueries = {
+  dogs: ['dog breed', 'dog breeds list', 'popular dog', 'dog'],
+  cats: ['cat breed', 'cat breeds list', 'domestic cat', 'cat'],
+  birds: ['bird species', 'bird', 'passerine', 'bird list'],
+  fish: ['fish species', 'fish', 'freshwater fish', 'marine fish'],
+  endangered: ['endangered species', 'endangered animal', 'critically endangered species', 'vulnerable species']
 };
+
+async function findAnimalPage(category) {
+  try {
+    const queries = wikiQueries[category] || ['animal'];
+    const q = queries[Math.floor(Math.random() * queries.length)];
+    const r = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*&srlimit=50`);
+    const d = await r.json();
+    const pages = d.query.search.map(s => s.title);
+    return pages[Math.floor(Math.random() * pages.length)];
+  } catch { return null; }
+}
 
 async function getWikiPage(title) {
   try {
@@ -669,7 +733,6 @@ const endangeredSpecies = [
 ];
 
 const quiz = [
-  // ponytail: quiz is hardcoded for quality and age-appropriateness. Dynamic gen would risk weird questions.
   { q: '🐱 What sound does a cat make?', opts: ['Meow', 'Bark', 'Roar', 'Chirp'], ans: 0 },
   { q: '🐕 Dogs are mammals. Is that...', opts: ['True', 'False'], ans: 0 },
   { q: '🐻‍❄️ A polar bear\'s skin is actually...', opts: ['White', 'Black', 'Pink', 'Brown'], ans: 1 },
@@ -679,19 +742,37 @@ const quiz = [
   { q: '🐧 Penguins can fly.', opts: ['True', 'False'], ans: 1 },
   { q: '🐝 What do bees collect from flowers?', opts: ['Leaves', 'Seeds', 'Nectar', 'Water'], ans: 2 },
   { q: '🐬 A dolphin is a type of fish.', opts: ['True', 'False'], ans: 1 },
-  { q: '🐼 What do giant pandas eat mostly?', opts: ['Fruit', 'Leaves', 'Bamboo', 'Insects'], ans: 2 }
+  { q: '🐼 What do giant pandas eat mostly?', opts: ['Fruit', 'Leaves', 'Bamboo', 'Insects'], ans: 2 },
+  { q: '🦁 Which big cat lives in a pride?', opts: ['Tiger', 'Lion', 'Leopard', 'Cheetah'], ans: 1 },
+  { q: '🦉 Owls can turn their heads 360 degrees.', opts: ['True', 'False'], ans: 1 },
+  { q: '🐘 What is an elephant\'s nose called?', opts: ['Snout', 'Trunk', 'Tusk', 'Horn'], ans: 1 },
+  { q: '🦈 A shark\'s skeleton is made of...', opts: ['Bone', 'Cartilage', 'Teeth', 'Rock'], ans: 1 },
+  { q: '🦎 Chameleons change color to match their mood.', opts: ['True', 'False'], ans: 0 },
+  { q: '🦒 What is a baby giraffe called?', opts: ['Cub', 'Calf', 'Foal', 'Kid'], ans: 1 },
+  { q: '🐸 Frogs drink water through their skin.', opts: ['True', 'False'], ans: 0 },
+  { q: '🦋 Butterflies taste with their...', opts: ['Tongue', 'Feet', 'Antennae', 'Wings'], ans: 1 },
+  { q: '🐊 Crocodiles can stick out their tongue.', opts: ['True', 'False'], ans: 1 },
+  { q: '🦩 Why are flamingos pink?', opts: ['From paint', 'From their food', 'Born that way', 'From water'], ans: 1 },
+  { q: '🐒 Which animal has the longest lifespan?', opts: ['Elephant', 'Tortoise', 'Parrot', 'Whale'], ans: 1 },
+  { q: '🦔 A group of porcupines is called a...', opts: ['Herd', 'Prickle', 'Group', 'Crowd'], ans: 1 },
+  { q: '🦛 Hippos can run faster than humans.', opts: ['True', 'False'], ans: 0 },
+  { q: '🐓 What bird lays the largest egg?', opts: ['Eagle', 'Ostrich', 'Penguin', 'Toucan'], ans: 1 },
+  { q: '🐙 How many hearts does an octopus have?', opts: ['1', '2', '3', '4'], ans: 2 }
 ];
 
+const QUIZ_PER_GAME = 10;
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+let quizSubset = shuffle([...quiz]).slice(0, QUIZ_PER_GAME);
 let qIdx = 0;
 let qScore = 0;
 let qDone = false;
 
 function renderQuiz() {
-  if (qIdx >= quiz.length) { finishQuiz(); return; }
-  const q = quiz[qIdx];
-  document.getElementById('qNumber').textContent = `Question ${qIdx + 1}/${quiz.length}`;
+  if (qIdx >= quizSubset.length) { finishQuiz(); return; }
+  const q = quizSubset[qIdx];
+  document.getElementById('qNumber').textContent = `Question ${qIdx + 1}/${quizSubset.length}`;
   document.getElementById('qText').textContent = q.q;
-  document.getElementById('qProgress').style.width = `${(qIdx / quiz.length) * 100}%`;
+  document.getElementById('qProgress').style.width = `${(qIdx / quizSubset.length) * 100}%`;
   const opts = document.getElementById('qOptions');
   opts.innerHTML = '';
   q.opts.forEach((opt, i) => {
@@ -707,7 +788,7 @@ function renderQuiz() {
 
 function checkAnswer(idx) {
   if (qDone) return;
-  const q = quiz[qIdx];
+  const q = quizSubset[qIdx];
   const opts = document.querySelectorAll('.q-opt');
   opts.forEach((el, i) => {
     el.classList.add('disabled');
@@ -726,9 +807,9 @@ function checkAnswer(idx) {
 function finishQuiz() {
   document.getElementById('qActive').style.display = 'none';
   document.getElementById('qProgress').style.width = '100%';
-  document.getElementById('finalScore').textContent = `${qScore}/${quiz.length}`;
+  document.getElementById('finalScore').textContent = `${qScore}/${quizSubset.length}`;
   let badge, msg;
-  if (qScore === quiz.length) { badge = '🏆 Animal Genius'; msg = 'You really know your animals!'; }
+  if (qScore === quizSubset.length) { badge = '🏆 Animal Genius'; msg = 'You really know your animals!'; }
   else if (qScore >= 7) { badge = '🦊 Wildlife Expert'; msg = 'Almost perfect! You\'re a nature pro.'; }
   else if (qScore >= 4) { badge = '🐾 Nature Explorer'; msg = 'Good job! Keep learning about animals.'; }
   else { badge = '🐣 Curious Cub'; msg = 'You\'re just getting started — try again!'; }
@@ -739,6 +820,7 @@ function finishQuiz() {
 }
 
 function resetQuiz() {
+  quizSubset = shuffle([...quiz]).slice(0, QUIZ_PER_GAME);
   qIdx = 0; qScore = 0; qDone = false;
   document.getElementById('qScoreCorrect').textContent = '0';
   renderQuiz();
@@ -785,9 +867,8 @@ async function refreshAOTD() {
     if (d) imgUrl = d.message;
   }
   if (!imgUrl) {
-    const pages = wikiPages[type];
-    if (pages) {
-      const page = pages[Math.floor(Math.random() * pages.length)];
+    const page = await findAnimalPage(type);
+    if (page) {
       const wikiData = await getWikiPage(page);
       if (wikiData) {
         imgUrl = wikiData.thumbnail?.source || null;
@@ -845,9 +926,8 @@ async function openCategory(type) {
   };
   const meta = catMeta[type];
 
-  // Pick a Wikipedia page — image + extract match each other
-  const pages = wikiPages[type];
-  const page = pages ? pages[Math.floor(Math.random() * pages.length)] : null;
+  // Pick a Wikipedia page — dynamic search, unlimited variety
+  const page = await findAnimalPage(type);
   let wikiData = page ? await getWikiPage(page) : null;
 
   if (wikiData) {
