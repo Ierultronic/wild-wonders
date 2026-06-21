@@ -657,6 +657,9 @@ function chirp() {
   } catch {}
 }
 
+// ponytail: Wikipedia displaytitle has HTML markup. Strip it to plain text.
+function stripHtml(s) { return s.replace(/<[^>]*>/g, ''); }
+
 const endangeredSpecies = [
   { name: 'Sumatran Elephant', emoji: '🐘', status: 'Critical', statusClass: 'critical', fact: 'Only about 2,400 remain in the wild. Palm oil plantations are taking their home.' },
   { name: 'Sea Turtle', emoji: '🐢', status: 'Vulnerable', statusClass: 'vulnerable', fact: 'They\'ve been around since dinosaurs — but plastic pollution is their biggest enemy.' },
@@ -788,9 +791,9 @@ async function refreshAOTD() {
       const wikiData = await getWikiPage(page);
       if (wikiData) {
         imgUrl = wikiData.thumbnail?.source || null;
-        if (wikiData.displaytitle) name = wikiData.displaytitle.replace(/\(.*?\)/g,'').trim();
-        const ext = (wikiData.extract || '').split('.').slice(0,2).join('.');
-        if (ext) fact = ext;
+        if (wikiData.displaytitle) name = stripHtml(wikiData.displaytitle).replace(/\(.*?\)/g,'').trim();
+        const ext = stripHtml(wikiData.extract || '').split('.').slice(0,2).join('.');
+        if (ext) fact = ext + '.';
       }
     }
   }
@@ -849,11 +852,11 @@ async function openCategory(type) {
 
   if (wikiData) {
     if (wikiData.thumbnail?.source) setModalImg(wikiData.thumbnail.source);
-    const cleanName = (wikiData.displaytitle || meta[1]).replace(/\(.*?\)/g,'').trim();
+    const cleanName = stripHtml(wikiData.displaytitle || meta[1]).replace(/\(.*?\)/g,'').trim();
     title.textContent = `${meta[0]} ${cleanName}`;
     sub.textContent = meta[2];
 
-    const extract = (wikiData.extract || '').split('. ').slice(0, 2).join('. ') + '.';
+    const extract = stripHtml(wikiData.extract || '').split('. ').slice(0, 2).join('. ') + '.';
     if (extract.length > 10) {
       factsDiv.innerHTML = `<p class="fact">${extract}</p>`;
     }
