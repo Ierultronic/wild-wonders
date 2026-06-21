@@ -248,12 +248,26 @@ button:active { transform: scale(0.97); }
   0% { transform: scale(0.9); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
-.modal-img {
+.modal-img-wrap {
   width: 100%;
   height: 240px;
-  object-fit: cover;
+  background: var(--tan);
   border-radius: 28px 28px 0 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
 }
+.modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.modal-img.show { display: block; }
+.modal-img-wrap .placeholder { display: none; }
+.modal-img-wrap.noimg .placeholder { display: block; }
 .modal-body { padding: 24px; }
 .modal-body h2 { font-size: 28px; margin-bottom: 4px; }
 .modal-body .sub { color: #999; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
@@ -377,7 +391,7 @@ button:active { transform: scale(0.97); }
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .end-card { flex-direction: column; text-align: center; }
   .end-card img { width: 120px; height: 120px; }
-  .modal-img { height: 180px; }
+  .modal-img-wrap { height: 180px; }
   .header h1 { font-size: 22px; }
 }
 </style>
@@ -474,7 +488,10 @@ button:active { transform: scale(0.97); }
     <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal" style="position:relative;">
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-img-wrap noimg" id="modalImgWrap">
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <div class="placeholder">🦊</div>
+    </div>
     <div class="modal-body">
       <h2 id="modalTitle"></h2>
       <div class="sub" id="modalSub"></div>
@@ -724,47 +741,56 @@ async function refreshAOTD() {
   container.innerHTML = `<div class="aotd-card"><img src="${imgUrl}" alt="${name}" loading="lazy"><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${name}</h3><p>${fact}</p><button onclick="refreshAOTD()">${i18n[currentLang].aotd_btn || 'Next Animal →'}</button></div></div>`;
 }
 
+function setModalImg(src) {
+  const wrap = document.getElementById('modalImgWrap');
+  const img = document.getElementById('modalImg');
+  if (src) {
+    img.src = src;
+    img.classList.add('show');
+    wrap.classList.remove('noimg');
+  } else {
+    img.classList.remove('show');
+    wrap.classList.add('noimg');
+  }
+}
+
 async function openCategory(type) {
   const modal = document.getElementById('modal');
-  const img = document.getElementById('modalImg');
   const title = document.getElementById('modalTitle');
   const sub = document.getElementById('modalSub');
   const factsDiv = document.getElementById('modalFacts');
   const audioDiv = document.getElementById('modalAudio');
+  const placeholder = document.querySelector('#modalImgWrap .placeholder');
 
   audioDiv.style.display = 'none';
-  img.style.display = 'block';
-  img.src = '';
+  setModalImg(null);
   modal.classList.add('open');
 
   if (type === 'endangered') {
     const s = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
-    img.style.display = 'none';
+    placeholder.textContent = s.emoji;
     title.textContent = s.emoji + ' ' + s.name;
     sub.textContent = 'Status: ' + s.status;
     factsDiv.innerHTML = `<p class="fact">${s.fact}</p>`;
     return;
   }
 
+  placeholder.textContent = '🔍';
   title.textContent = '';
   sub.textContent = '';
   factsDiv.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
 
   if (type === 'dogs') {
     const d = await apiGet('https://dog.ceo/api/breeds/image/random');
-    if (d) {
-      img.src = d.message;
-      title.textContent = '🐕 ' + (i18n[currentLang].cat_dogs || 'Dog');
-      sub.textContent = 'Man\'s best friend';
-      factsDiv.innerHTML = facts.dogs.map(f => `<p class="fact">• ${f}</p>`).join('');
-    } else { showFallback('dogs'); }
+    if (d) { setModalImg(d.message); title.textContent = '🐕 ' + (i18n[currentLang].cat_dogs || 'Dog'); sub.textContent = 'Man\'s best friend'; factsDiv.innerHTML = facts.dogs.map(f => `<p class="fact">• ${f}</p>`).join(''); }
+    else { showFallback('dogs'); }
   } else if (type === 'cats') {
     const [c, cf] = await Promise.all([
       apiGet('https://shibe.online/api/cats?count=1'),
       apiGet('https://catfact.ninja/fact')
     ]);
     if (c) {
-      img.src = c[0];
+      setModalImg(c[0]);
       title.textContent = '🐈 ' + (i18n[currentLang].cat_cats || 'Cat');
       sub.textContent = 'Professional napper';
       const catFacts = cf ? [cf.fact, ...facts.cats.slice(0, 3)] : facts.cats;
@@ -776,7 +802,7 @@ async function openCategory(type) {
       apiGet('https://xeno-canto.org/api/2/recordings?query=song&page=1')
     ]);
     if (b) {
-      img.src = b[0];
+      setModalImg(b[0]);
       title.textContent = '🐦 ' + (i18n[currentLang].cat_birds || 'Bird');
       sub.textContent = 'Sky dancer';
       factsDiv.innerHTML = facts.birds.map(f => `<p class="fact">• ${f}</p>`).join('');
@@ -795,7 +821,7 @@ async function openCategory(type) {
     const f = await apiGet('https://www.fishwatch.gov/api/species');
     if (f && f.length > 0) {
       const species = f[Math.floor(Math.random() * f.length)];
-      img.src = species['Species Illustration Photo']?.src || '';
+      setModalImg(species['Species Illustration Photo']?.src || '');
       title.textContent = '🐟 ' + (species['Species Name'] || 'Fish');
       sub.textContent = species['Habitat'] || 'Ocean dweller';
       factsDiv.innerHTML = '<p class="fact">• ' + (species['Biology'] || facts.fish[Math.floor(Math.random() * facts.fish.length)]) + '</p>';
@@ -808,9 +834,9 @@ async function openCategory(type) {
 
 function showFallback(type) {
   const titles = { dogs: '🐕 Dog', cats: '🐈 Cat', birds: '🐦 Bird', fish: '🐟 Fish' };
+  const emojis = { dogs: '🐕', cats: '🐈', birds: '🐦', fish: '🐟' };
   const factKeys = { dogs: facts.dogs, cats: facts.cats, birds: facts.birds, fish: facts.fish };
-  document.getElementById('modalImg').src = '';
-  document.getElementById('modalImg').style.display = 'none';
+  document.querySelector('#modalImgWrap .placeholder').textContent = emojis[type] || '🦊';
   document.getElementById('modalTitle').textContent = titles[type] || 'Animal';
   document.getElementById('modalSub').textContent = i18n[currentLang].load_err || 'This animal is camera shy!';
   const f = factKeys[type] || facts.dogs;
