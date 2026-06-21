@@ -508,7 +508,7 @@ button:active { transform: scale(0.97); }
         <div class="sub" id="modalSub"></div>
         <div id="modalFacts"></div>
         <div id="modalAudio" class="audio-player" style="display:none;">
-          <button onclick="playBirdSound()">▶</button>
+          <button>▶</button>
           <div>
             <div class="label">Bird Song</div>
             <audio id="birdAudio" preload="none"></audio>
@@ -538,7 +538,6 @@ const i18n = {
     quiz_again: 'Play Again',
     end_title: 'Need Our Help',
     footer: 'Built with ❤️ for curious kids',
-    load_err: 'This animal is camera shy! Try another.',
     load_find: 'Finding an animal...',
     bird_song: 'Bird Song',
     cat_dogs_fact: 'A dog\'s nose print is as unique as a human fingerprint.',
@@ -618,6 +617,46 @@ const facts = {
     'The vaquita porpoise has fewer than 10 individuals left.'
   ]
 };
+
+// ponytail: single reliable image source for ALL categories. Wikipedia API is free, CORS-yes, no key.
+const wikiPages = {
+  dogs: ['Dog', 'Golden_Retriever', 'Labrador_Retriever', 'German_Shepherd', 'Poodle', 'Beagle', 'Siberian_Husky'],
+  cats: ['Cat', 'Siamese_cat', 'Persian_cat', 'Maine_Coon', 'Bengal_cat', 'Ragdoll', 'Sphynx_cat'],
+  birds: ['Bird', 'Parrot', 'Eagle', 'Penguin', 'Hummingbird', 'Owl', 'Flamingo', 'Peacock'],
+  fish: ['Fish', 'Clownfish', 'Goldfish', 'Angelfish', 'Betta', 'Guppy', 'Neon_tetra'],
+  endangered: ['Sumatran_eLePhant', 'Sea_turtle', 'Orangutan', 'Amur_leopard', 'Vaquita', 'Polar_bear', 'Tiger']
+};
+
+async function getWikiImg(title) {
+  try {
+    const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g,'_'))}`);
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.thumbnail?.source || null;
+  } catch { return null; }
+}
+
+function chirp() {
+  // ponytail: synthetic chirp when real bird recording unavailable. Web Audio, no files needed.
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    [0, 0.15, 0.3].forEach(delay => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(2500, ctx.currentTime + delay);
+      osc.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + delay + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + delay + 0.2);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + delay);
+      osc.stop(ctx.currentTime + delay + 0.25);
+    });
+  } catch {}
+}
 
 const endangeredSpecies = [
   { name: 'Sumatran Elephant', emoji: '🐘', status: 'Critical', statusClass: 'critical', fact: 'Only about 2,400 remain in the wild. Palm oil plantations are taking their home.' },
@@ -729,22 +768,28 @@ async function apiGet(url) {
 }
 
 async function refreshAOTD() {
-  const types = ['dogs', 'cats', 'birds'];
+  const types = ['dogs', 'cats', 'birds', 'fish', 'endangered'];
   const type = types[Math.floor(Math.random() * types.length)];
   const container = document.getElementById('aotdContainer');
-  container.innerHTML = `<div class="aotd-card"><div class="emoji-big">🔍</div><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${i18n[currentLang].load_find || 'Finding an animal...'}</h3><p class="skeleton" style="height:40px;"></p></div></div>`;
-  let imgUrl = '', name = '', fact = '';
+  const names = { dogs:'Random Dog', cats:'Random Cat', birds:'Random Bird', fish:'Random Fish', endangered:'Endangered' };
+  const emojis = { dogs:'🐕', cats:'🐈', birds:'🐦', fish:'🐟', endangered:'🌍' };
+
+  container.innerHTML = `<div class="aotd-card"><div class="emoji-big">${emojis[type]}</div><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${i18n[currentLang].load_find || 'Finding an animal...'}</h3><p class="skeleton" style="height:40px;"></p></div></div>`;
+
+  let imgUrl = '', name = names[type], fact = facts[type][Math.floor(Math.random() * facts[type].length)];
+
   if (type === 'dogs') {
     const d = await apiGet('https://dog.ceo/api/breeds/image/random');
-    if (d) { imgUrl = d.message; name = 'Random Dog'; fact = facts.dogs[Math.floor(Math.random() * facts.dogs.length)]; }
-  } else if (type === 'cats') {
-    const c = await apiGet('https://shibe.online/api/cats?count=1&urls=true&httpsUrls=true');
-    const cf = await apiGet('https://catfact.ninja/fact');
-    if (c && c[0]) { imgUrl = c[0]; name = 'Random Cat'; fact = cf ? cf.fact : facts.cats[Math.floor(Math.random() * facts.cats.length)]; }
-  } else if (type === 'birds') {
-    const b = await apiGet('https://shibe.online/api/birds?count=1&urls=true&httpsUrls=true');
-    if (b) { imgUrl = b[0]; name = 'Random Bird'; fact = facts.birds[Math.floor(Math.random() * facts.birds.length)]; }
+    if (d) imgUrl = d.message;
   }
+  if (!imgUrl) {
+    const pages = wikiPages[type];
+    if (pages) {
+      const page = pages[Math.floor(Math.random() * pages.length)];
+      imgUrl = await getWikiImg(page);
+    }
+  }
+
   if (!imgUrl) {
     const fallback = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
     container.innerHTML = `<div class="aotd-card"><div class="emoji-big">${fallback.emoji}</div><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${fallback.name}</h3><p>${fallback.fact}</p><button onclick="refreshAOTD()">${i18n[currentLang].aotd_btn || 'Next Animal →'}</button></div></div>`;
@@ -776,96 +821,67 @@ async function openCategory(type) {
 
   audioDiv.style.display = 'none';
   setModalImg(null);
+  placeholder.textContent = { dogs:'🐕', cats:'🐈', birds:'🐦', fish:'🐟', endangered:'🌍' }[type] || '🔍';
   modal.classList.add('open');
 
-  if (type === 'endangered') {
-    const s = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
-    placeholder.textContent = s.emoji;
-    title.textContent = s.emoji + ' ' + s.name;
-    sub.textContent = 'Status: ' + s.status;
-    factsDiv.innerHTML = `<p class="fact">${s.fact}</p>`;
-    return;
-  }
-
-  placeholder.textContent = '🔍';
   title.textContent = '';
   sub.textContent = '';
   factsDiv.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
 
-  if (type === 'dogs') {
-    const d = await apiGet('https://dog.ceo/api/breeds/image/random');
-    if (d) { setModalImg(d.message); title.textContent = '🐕 ' + (i18n[currentLang].cat_dogs || 'Dog'); sub.textContent = 'Man\'s best friend'; factsDiv.innerHTML = facts.dogs.map(f => `<p class="fact">• ${f}</p>`).join(''); }
-    else { showFallback('dogs'); }
-  } else if (type === 'cats') {
-    const [c, cf] = await Promise.all([
-      apiGet('https://shibe.online/api/cats?count=1&urls=true&httpsUrls=true'),
-      apiGet('https://catfact.ninja/fact')
-    ]);
-    if (c && c[0]) {
-      setModalImg(c[0]);
-      title.textContent = '🐈 ' + (i18n[currentLang].cat_cats || 'Cat');
-      sub.textContent = 'Professional napper';
-      const catFacts = cf ? [cf.fact, ...facts.cats.slice(0, 3)] : facts.cats;
-      factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
-    } else { showFallback('cats'); }
-  } else if (type === 'birds') {
-    const [b, xc] = await Promise.all([
-      apiGet('https://shibe.online/api/birds?count=1&urls=true&httpsUrls=true'),
-      (async () => {
-        // ponytail: xeno-canto has no CORS, use corsproxy. If proxy fails, fallback silently.
-        try {
-          const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1'), { mode: 'cors' });
-          if (!r.ok) return null;
-          return await r.json();
-        } catch { return null; }
-      })()
-    ]);
-    if (b && b[0]) {
-      setModalImg(b[0]);
-      title.textContent = '🐦 ' + (i18n[currentLang].cat_birds || 'Bird');
-      sub.textContent = 'Sky dancer';
-      factsDiv.innerHTML = facts.birds.map(f => `<p class="fact">• ${f}</p>`).join('');
-    }
-    if (xc && xc.recordings && xc.recordings.length > 0) {
-      const rec = xc.recordings[Math.floor(Math.random() * Math.min(xc.recordings.length, 5))];
-      if (rec && rec.file) {
-        audioDiv.style.display = 'flex';
-        const audio = document.getElementById('birdAudio');
-        audio.src = 'https:' + rec.file;
-        audioDiv.querySelector('.label').textContent = (rec.en || rec.fr || 'Bird') + ' — ' + (rec.type || 'song');
-      }
-    }
-    if (!b) { showFallback('birds'); }
-  } else if (type === 'fish') {
-    const f = await apiGet('https://www.fishwatch.gov/api/species');
-    if (f && f.length > 0) {
-      const species = f[Math.floor(Math.random() * f.length)];
-      const photo = species['Species Illustration Photo']?.src;
-      if (photo) { setModalImg(photo); } else { placeholder.textContent = '🐟'; }
-      title.textContent = '🐟 ' + (species['Species Name'] || 'Fish');
-      sub.textContent = species['Habitat'] || 'Ocean dweller';
-      factsDiv.innerHTML = '<p class="fact">• ' + (species['Biology'] || facts.fish[Math.floor(Math.random() * facts.fish.length)]) + '</p>';
-      if (species['Physical Description']) {
-        factsDiv.innerHTML += '<p class="fact">• ' + species['Physical Description'] + '</p>';
-      }
-    } else { showFallback('fish'); }
+  // Wikipedia photo for every category — free, CORS-yes, no key, real photos
+  const pages = wikiPages[type];
+  if (pages) {
+    const page = pages[Math.floor(Math.random() * pages.length)];
+    const img = await getWikiImg(page);
+    if (img) setModalImg(img);
   }
-}
 
-function showFallback(type) {
-  const titles = { dogs: '🐕 Dog', cats: '🐈 Cat', birds: '🐦 Bird', fish: '🐟 Fish' };
-  const emojis = { dogs: '🐕', cats: '🐈', birds: '🐦', fish: '🐟' };
-  const factKeys = { dogs: facts.dogs, cats: facts.cats, birds: facts.birds, fish: facts.fish };
-  document.querySelector('#modalImgWrap .placeholder').textContent = emojis[type] || '🦊';
-  document.getElementById('modalTitle').textContent = titles[type] || 'Animal';
-  document.getElementById('modalSub').textContent = i18n[currentLang].load_err || 'This animal is camera shy!';
-  const f = factKeys[type] || facts.dogs;
-  document.getElementById('modalFacts').innerHTML = `<p class="fact">• ${f[Math.floor(Math.random() * f.length)]}</p>`;
-}
+  const catMeta = {
+    dogs: ['🐕', i18n[currentLang].cat_dogs || 'Dog', "Man's best friend"],
+    cats: ['🐈', i18n[currentLang].cat_cats || 'Cat', 'Professional napper'],
+    birds: ['🐦', i18n[currentLang].cat_birds || 'Bird', 'Sky dancer'],
+    fish: ['🐟', i18n[currentLang].cat_fish || 'Fish', 'Ocean dweller'],
+    endangered: ['🌍', i18n[currentLang].cat_endangered || 'Endangered', 'Need our help']
+  };
+  const meta = catMeta[type];
+  title.textContent = `${meta[0]} ${meta[1]}`;
+  sub.textContent = meta[2];
 
-function playBirdSound() {
-  const audio = document.getElementById('birdAudio');
-  audio.play();
+  // Facts — all categories show all their facts
+  const catFacts = facts[type] || facts.dogs;
+  factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
+
+  // Endangered — also get a specific species photo
+  if (type === 'endangered') {
+    const s = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
+    title.textContent = s.emoji + ' ' + s.name;
+    sub.textContent = 'Status: ' + s.status;
+    const img = await getWikiImg(s.name);
+    if (img) setModalImg(img);
+  }
+
+  // Birds — try real recording, fallback to synthetic chirp
+  if (type === 'birds') {
+    try {
+      const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1'));
+      const xc = await r.json();
+      if (xc && xc.recordings && xc.recordings.length > 0) {
+        const recs = xc.recordings.filter(r => r.file);
+        if (recs.length > 0) {
+          const rec = recs[Math.floor(Math.random() * Math.min(recs.length, 5))];
+          audioDiv.style.display = 'flex';
+          const audio = document.getElementById('birdAudio');
+          audio.src = 'https:' + rec.file;
+          document.querySelector('#modalAudio .label').textContent = (rec.en || rec.fr || 'Bird') + ' — ' + (rec.type || 'song');
+          document.querySelector('#modalAudio button').onclick = () => audio.play();
+          return;
+        }
+      }
+    } catch {}
+    audioDiv.style.display = 'flex';
+    document.querySelector('#modalAudio .label').textContent = '🔊 Synthetic chirp';
+    document.querySelector('#modalAudio button').onclick = chirp;
+  }
 }
 
 function closeModal() {
