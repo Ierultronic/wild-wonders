@@ -624,15 +624,14 @@ const wikiPages = {
   cats: ['Cat', 'Siamese_cat', 'Persian_cat', 'Maine_Coon', 'Bengal_cat', 'Ragdoll', 'Sphynx_cat'],
   birds: ['Bird', 'Parrot', 'Eagle', 'Penguin', 'Hummingbird', 'Owl', 'Flamingo', 'Peacock'],
   fish: ['Fish', 'Clownfish', 'Goldfish', 'Angelfish', 'Betta', 'Guppy', 'Neon_tetra'],
-  endangered: ['Sumatran_eLePhant', 'Sea_turtle', 'Orangutan', 'Amur_leopard', 'Vaquita', 'Polar_bear', 'Tiger']
+  endangered: ['Sumatran_elephant', 'Sea_turtle', 'Orangutan', 'Amur_leopard', 'Vaquita', 'Polar_bear', 'Tiger']
 };
 
-async function getWikiImg(title) {
+async function getWikiPage(title) {
   try {
     const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g,'_'))}`);
     if (!r.ok) return null;
-    const d = await r.json();
-    return d.thumbnail?.source || null;
+    return await r.json();
   } catch { return null; }
 }
 
@@ -786,7 +785,13 @@ async function refreshAOTD() {
     const pages = wikiPages[type];
     if (pages) {
       const page = pages[Math.floor(Math.random() * pages.length)];
-      imgUrl = await getWikiImg(page);
+      const wikiData = await getWikiPage(page);
+      if (wikiData) {
+        imgUrl = wikiData.thumbnail?.source || null;
+        if (wikiData.displaytitle) name = wikiData.displaytitle.replace(/\(.*?\)/g,'').trim();
+        const ext = (wikiData.extract || '').split('.').slice(0,2).join('.');
+        if (ext) fact = ext;
+      }
     }
   }
 
@@ -828,14 +833,6 @@ async function openCategory(type) {
   sub.textContent = '';
   factsDiv.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
 
-  // Wikipedia photo for every category — free, CORS-yes, no key, real photos
-  const pages = wikiPages[type];
-  if (pages) {
-    const page = pages[Math.floor(Math.random() * pages.length)];
-    const img = await getWikiImg(page);
-    if (img) setModalImg(img);
-  }
-
   const catMeta = {
     dogs: ['🐕', i18n[currentLang].cat_dogs || 'Dog', "Man's best friend"],
     cats: ['🐈', i18n[currentLang].cat_cats || 'Cat', 'Professional napper'],
@@ -844,28 +841,51 @@ async function openCategory(type) {
     endangered: ['🌍', i18n[currentLang].cat_endangered || 'Endangered', 'Need our help']
   };
   const meta = catMeta[type];
-  title.textContent = `${meta[0]} ${meta[1]}`;
-  sub.textContent = meta[2];
 
-  // Facts — all categories show all their facts
-  const catFacts = facts[type] || facts.dogs;
-  factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
+  // Pick a Wikipedia page — image + extract match each other
+  const pages = wikiPages[type];
+  const page = pages ? pages[Math.floor(Math.random() * pages.length)] : null;
+  let wikiData = page ? await getWikiPage(page) : null;
 
-  // Endangered — also get a specific species photo
+  if (wikiData) {
+    if (wikiData.thumbnail?.source) setModalImg(wikiData.thumbnail.source);
+    const cleanName = (wikiData.displaytitle || meta[1]).replace(/\(.*?\)/g,'').trim();
+    title.textContent = `${meta[0]} ${cleanName}`;
+    sub.textContent = meta[2];
+
+    const extract = (wikiData.extract || '').split('. ').slice(0, 2).join('. ') + '.';
+    if (extract.length > 10) {
+      factsDiv.innerHTML = `<p class="fact">${extract}</p>`;
+    }
+    const catFacts = facts[type] || facts.dogs;
+    const shown = new Set();
+    catFacts.forEach(f => {
+      if (!shown.has(f)) { shown.add(f); factsDiv.innerHTML += `<p class="fact">• ${f}</p>`; }
+    });
+  } else {
+    title.textContent = `${meta[0]} ${meta[1]}`;
+    sub.textContent = meta[2];
+    const catFacts = facts[type] || facts.dogs;
+    factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
+  }
+
+  // Endangered — override title with specific species
   if (type === 'endangered') {
     const s = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
     title.textContent = s.emoji + ' ' + s.name;
     sub.textContent = 'Status: ' + s.status;
-    const img = await getWikiImg(s.name);
-    if (img) setModalImg(img);
+    if (!wikiData || !wikiData.thumbnail?.source) {
+      const img = await getWikiPage(s.name);
+      if (img?.thumbnail?.source) setModalImg(img.thumbnail.source);
+    }
   }
 
-  // Birds — try real recording, fallback to synthetic chirp
+  // Birds — fresh sound every click
   if (type === 'birds') {
     try {
-      const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1'));
+      const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1&pageSize=20'));
       const xc = await r.json();
-      if (xc && xc.recordings && xc.recordings.length > 0) {
+      if (xc?.recordings?.length > 0) {
         const recs = xc.recordings.filter(r => r.file);
         if (recs.length > 0) {
           const rec = recs[Math.floor(Math.random() * Math.min(recs.length, 5))];
