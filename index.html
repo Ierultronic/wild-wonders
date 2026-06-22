@@ -3,465 +3,410 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Animal Explorer</title>
+<title>Wild Wonders — Animal Explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
-:root {
-  --cream: #FFF8F0;
-  --brown: #3D2C2C;
-  --tan: #E8D5B7;
-  --coral: #FF8C61;
-  --teal: #5BB5B5;
-  --sky: #6BB8D4;
-  --ocean: #4DB8FF;
-  --rose: #D46B5E;
-  --gold: #F5C842;
-  --leaf: #8DB580;
-  --font-heading: 'Patrick Hand', cursive;
-  --font-body: system-ui, -apple-system, sans-serif;
+/* ─── Reset & Vars ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FFF5E6;--surface:#fff;--text:#3D2C2C;--text-muted:#7A6B6B;
+  --coral:#E86A4F;--teal:#3A9D9D;--tan:#E8D5B7;--sky:#6BB8D4;--ocean:#4DB8FF;
+  --rose:#D46B5E;--gold:#F5C842;--leaf:#8DB580;--navy:#2C3E50;
+  --shadow:0 4px 20px rgba(61,44,44,0.08);
+  --shadow-lg:0 12px 40px rgba(61,44,44,0.15);
+  --font-head:'Patrick Hand',cursive;
+  --font-body:system-ui,-apple-system,sans-serif;
+  --radius:20px;--radius-sm:12px;--radius-lg:28px;
+  --spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease:cubic-bezier(0.22,1,0.36,1);
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font-body);
-  background: var(--cream);
-  color: var(--brown);
-  font-size: 18px;
-  line-height: 1.6;
-  min-height: 100vh;
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#12121e;--surface:#1e1e32;--text:#e0dcd6;--text-muted:#8f8a84;
+    --coral:#D45A3E;--teal:#3AA0A0;--tan:#2a2a3a;--shadow:0 4px 20px rgba(0,0,0,0.3);
+    --shadow-lg:0 12px 40px rgba(0,0,0,0.5);
+  }
 }
-h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 400; letter-spacing: 0.02em; }
-img { max-width: 100%; height: auto; display: block; }
-button {
-  cursor: pointer;
-  border: none;
-  font-family: var(--font-heading);
-  font-size: 18px;
-  padding: 10px 24px;
-  border-radius: 50px;
-  background: var(--coral);
-  color: white;
-  transition: transform 0.15s, box-shadow 0.15s;
+body.dark-mode{
+  --bg:#12121e;--surface:#1e1e32;--text:#e0dcd6;--text-muted:#8f8a84;
+  --coral:#D45A3E;--teal:#3AA0A0;--tan:#2a2a3a;--shadow:0 4px 20px rgba(0,0,0,0.3);
+  --shadow-lg:0 12px 40px rgba(0,0,0,0.5);
 }
-button:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-button:active { transform: scale(0.97); }
+body{
+  font-family:var(--font-body);background:var(--bg);color:var(--text);
+  font-size:18px;line-height:1.6;min-height:100vh;
+  transition:background .3s var(--ease),color .3s var(--ease);
+}
+h1,h2,h3,h4{font-family:var(--font-head);font-weight:400;letter-spacing:.02em}
+img{max-width:100%;height:auto;display:block}
+button{
+  cursor:pointer;border:none;font-family:var(--font-head);font-size:18px;
+  padding:10px 24px;border-radius:50px;background:var(--coral);color:#fff;
+  transition:transform .2s var(--spring),box-shadow .2s var(--ease);
+}
+button:hover{transform:scale(1.05);box-shadow:0 6px 16px rgba(0,0,0,.15)}
+button:active{transform:scale(.97)}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  background: white;
-  border-bottom: 3px solid var(--tan);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ─── Animated background ─── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(ellipse 80% 60% at 20% 0%, rgba(232,106,79,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 80% 100%, rgba(58,157,157,.06) 0%,transparent 60%);
+  pointer-events:none;
 }
-.header h1 {
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.lang-btn {
-  background: var(--tan);
-  color: var(--brown);
-  font-size: 16px;
-  padding: 6px 16px;
+@media(prefers-color-scheme:dark){
+  body::before{
+    background:radial-gradient(ellipse 80% 60% at 20% 0%, rgba(212,90,62,.12) 0%,transparent 60%),
+               radial-gradient(ellipse 60% 50% at 80% 100%, rgba(58,160,160,.1) 0%,transparent 60%);
+  }
 }
 
-.hero {
-  text-align: center;
-  padding: 40px 24px 20px;
+/* ─── Header ─── */
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 24px;position:sticky;top:0;z-index:100;
+  background:rgba(255,245,230,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--tan);transition:background .3s var(--ease);
 }
-.hero h2 { font-size: 32px; margin-bottom: 8px; }
-.hero p { font-size: 20px; color: #7A6B6B; }
+.dark-mode .header,.dark-body .header{background:rgba(18,18,30,.85)}
+.header h1{font-size:26px;display:flex;align-items:center;gap:8px}
+.header nav{display:flex;align-items:center;gap:8px}
+.header nav a{
+  font-family:var(--font-head);font-size:16px;color:var(--text-muted);
+  padding:4px 10px;border-radius:8px;transition:color .2s,background .2s;
+}
+.header nav a:hover{color:var(--text);background:var(--tan);text-decoration:none}
+.lang-btn,.theme-btn{
+  background:var(--tan);color:var(--text);font-size:15px;padding:6px 14px;
+  min-width:40px;border-radius:50px;transition:background .2s,transform .2s;
+}
+.lang-btn:hover,.theme-btn:hover{background:var(--coral);color:#fff;transform:scale(1.05)}
 
-.section { padding: 40px 24px; max-width: 960px; margin: 0 auto; }
-.section-title {
-  font-size: 28px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* ─── Hero ─── */
+.hero{
+  text-align:center;padding:48px 24px 32px;position:relative;overflow:hidden;
 }
-
-.aotd-card {
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(61,44,44,0.08);
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  border: 2px solid var(--tan);
+.hero h2{font-size:clamp(28px,5vw,48px);margin-bottom:8px;animation:fadeUp .6s var(--spring)}
+.hero .sub{
+  font-size:20px;color:var(--text-muted);min-height:2em;
+  transition:opacity .4s;position:relative;
 }
-.aotd-card img {
-  width: 160px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 16px;
-  flex-shrink: 0;
+.hero .sub .fact-cycle{animation:fadeInOut 4s var(--ease) infinite}
+@keyframes fadeInOut{
+  0%,100%{opacity:1}25%{opacity:1}50%{opacity:0}75%{opacity:0}
 }
-.aotd-card .info { flex: 1; }
-.aotd-card h3 { font-size: 24px; margin-bottom: 4px; }
-.aotd-card .tag {
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #999;
-  margin-bottom: 8px;
+.hero-emoji{
+  position:absolute;font-size:28px;pointer-events:none;animation:floatUp linear infinite;
+  opacity:.35;
 }
-.aotd-card p { margin-bottom: 12px; }
-.aotd-card .emoji-big { font-size: 64px; text-align: center; width: 160px; flex-shrink: 0; }
-
-.cat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
+.hero-emoji:nth-child(1){left:10%;animation-duration:12s;animation-delay:0s;font-size:32px}
+.hero-emoji:nth-child(2){left:30%;animation-duration:15s;animation-delay:2s;font-size:24px}
+.hero-emoji:nth-child(3){left:55%;animation-duration:11s;animation-delay:4s;font-size:36px}
+.hero-emoji:nth-child(4){left:75%;animation-duration:14s;animation-delay:1s;font-size:22px}
+.hero-emoji:nth-child(5){left:90%;animation-duration:13s;animation-delay:3s;font-size:30px}
+@keyframes floatUp{
+  0%{transform:translateY(100vh) rotate(0deg);opacity:0}
+  10%{opacity:.35}
+  90%{opacity:.35}
+  100%{transform:translateY(-20vh) rotate(360deg);opacity:0}
 }
-.cat-card {
-  background: white;
-  border-radius: 20px;
-  padding: 24px 16px;
-  text-align: center;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-  box-shadow: 0 2px 10px rgba(61,44,44,0.06);
-}
-.cat-card:hover {
-  transform: translateY(-4px) rotate(-1deg);
-  box-shadow: 0 8px 24px rgba(61,44,44,0.12);
-}
-.cat-card:active { transform: scale(0.96); }
-.cat-card .icon { font-size: 48px; margin-bottom: 8px; }
-.cat-card .name { font-family: var(--font-heading); font-size: 22px; }
-.cat-card.dogs { border-color: var(--coral); }
-.cat-card.cats { border-color: var(--teal); }
-.cat-card.birds { border-color: var(--sky); }
-.cat-card.fish { border-color: var(--ocean); }
-.cat-card.endangered { border-color: var(--rose); }
-
-/* Quiz */
-.quiz-card {
-  background: white;
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(61,44,44,0.08);
-  border: 2px solid var(--tan);
-}
-.q-progress {
-  height: 8px;
-  background: var(--tan);
-  border-radius: 4px;
-  margin-bottom: 24px;
-  overflow: hidden;
-}
-.q-progress-fill {
-  height: 100%;
-  background: var(--gold);
-  border-radius: 4px;
-  transition: width 0.3s;
-}
-.q-score {
-  font-family: var(--font-heading);
-  font-size: 20px;
-  margin-bottom: 16px;
-  text-align: right;
-}
-.q-number {
-  font-family: var(--font-heading);
-  font-size: 18px;
-  color: #999;
-  margin-bottom: 8px;
-}
-.q-text {
-  font-size: 22px;
-  margin-bottom: 24px;
-  font-weight: 600;
-}
-.q-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.q-opt {
-  padding: 14px 20px;
-  border: 2px solid var(--tan);
-  border-radius: 14px;
-  background: var(--cream);
-  cursor: pointer;
-  font-size: 18px;
-  font-family: var(--font-body);
-  text-align: left;
-  transition: background 0.15s, border-color 0.15s, transform 0.15s;
-}
-.q-opt:hover { background: #F0E8D8; border-color: #d4c4a8; transform: scale(1.02); }
-.q-opt.correct { background: #D4EDDA; border-color: var(--leaf); }
-.q-opt.wrong { background: #F8D7DA; border-color: var(--rose); }
-.q-opt.disabled { pointer-events: none; opacity: 0.7; }
-
-.quiz-end {
-  text-align: center;
-  padding: 32px;
-  display: none;
-}
-.quiz-end.show { display: block; }
-.quiz-end .big-score {
-  font-family: var(--font-heading);
-  font-size: 64px;
-  margin-bottom: 8px;
-}
-.quiz-end .badge {
-  font-family: var(--font-heading);
-  font-size: 32px;
-  color: var(--coral);
-  margin-bottom: 16px;
-}
-.quiz-end p { margin-bottom: 8px; color: #7A6B6B; }
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  padding: 24px;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: white;
-  border-radius: 28px;
-  padding: 0;
-  max-width: 680px;
-  width: 100%;
-  max-height: 80vh;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  animation: pop 0.3s ease;
-}
-.modal-inner {
-  display: flex;
-  min-height: 0;
-}
-@keyframes pop {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.modal-img-wrap {
-  flex: 0 0 50%;
-  min-height: 360px;
-  background: var(--tan);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 72px;
-}
-.modal-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: none;
-}
-.modal-img.show { display: block; }
-.modal-img-wrap .placeholder { display: none; }
-.modal-img-wrap.noimg .placeholder { display: block; }
-.modal-body {
-  flex: 1;
-  padding: 28px 32px;
-  overflow-y: auto;
-  max-height: 460px;
-}
-.modal-body h2 { font-size: 26px; margin-bottom: 6px; }
-.modal-body .sub { color: #999; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
-.modal-body .fact { margin-bottom: 14px; font-size: 17px; line-height: 1.5; }
-.modal-body .fact:last-child { margin-bottom: 0; }
-.modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: white;
-  color: var(--brown);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  padding: 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  z-index: 1;
-}
-.audio-player {
-  margin-top: 16px;
-  padding: 16px;
-  background: #F0F8FF;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.audio-player button {
-  background: var(--teal);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.audio-player .label { font-size: 15px; color: #666; }
-
-/* Endangered */
-.end-card {
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  border: 2px solid var(--rose);
-  box-shadow: 0 4px 20px rgba(61,44,44,0.08);
-}
-.end-card img {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 16px;
-  flex-shrink: 0;
-}
-.end-status {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-.end-status.vulnerable { background: #FFF3CD; color: #856404; }
-.end-status.endangered { background: #F8D7DA; color: #721C24; }
-.end-status.critical { background: #F5C6CB; color: #721C24; }
-.end-card h3 { font-size: 24px; margin-bottom: 4px; }
-.end-card .info { flex: 1; }
-
-/* Loading skeleton */
-.skeleton {
-  background: linear-gradient(90deg, var(--tan) 25%, #F0E8D8 50%, var(--tan) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 8px;
-}
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-/* Confetti */
-.confetti-piece {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  font-size: 24px;
-  animation: confetti-fall 2s forwards;
-}
-@keyframes confetti-fall {
-  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+@media(prefers-reduced-motion:reduce){
+  .hero-emoji{display:none}
+  .hero h2,.hero .sub{animation:none}
+  .hero .sub .fact-cycle{animation:none}
 }
 
-/* Error / fallback */
-.fallback { text-align: center; padding: 40px 24px; }
-.fallback .emoji { font-size: 48px; margin-bottom: 12px; }
-.fallback p { color: #7A6B6B; margin-bottom: 16px; }
-
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 32px 24px;
-  color: #999;
-  font-size: 15px;
-  border-top: 2px solid var(--tan);
-  margin-top: 20px;
+/* ─── Sections ─── */
+.section{padding:48px 24px;max-width:1040px;margin:0 auto}
+.section-title{
+  font-size:28px;margin-bottom:20px;display:flex;align-items:center;gap:8px;
+  scroll-margin-top:72px;
 }
 
-@media (max-width: 600px) {
-  .hero h2 { font-size: 24px; }
-  .hero p { font-size: 18px; }
-  .aotd-card { flex-direction: column; text-align: center; }
-  .aotd-card img { width: 120px; height: 120px; }
-  .aotd-card .emoji-big { width: auto; }
-  .q-options { grid-template-columns: 1fr; }
-  .cat-grid { grid-template-columns: repeat(2, 1fr); }
-  .end-card { flex-direction: column; text-align: center; }
-  .end-card img { width: 120px; height: 120px; }
-  .modal-inner { flex-direction: column; }
-  .modal-img-wrap { flex: none; height: 200px; min-height: 200px; font-size: 48px; }
-  .modal-body { max-height: none; padding: 20px; }
-  .header h1 { font-size: 22px; }
+/* ─── AOTD ─── */
+.aotd-card{
+  position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  min-height:280px;display:flex;align-items:flex-end;
+  box-shadow:var(--shadow-lg);animation:fadeUp .5s var(--spring);
+}
+.aotd-card .bg-img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+}
+.aotd-card .overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.3) 50%,transparent 100%);
+  z-index:1;
+}
+.aotd-card .info{
+  position:relative;z-index:2;padding:32px;color:#fff;width:100%;
+}
+.aotd-card .info .tag{
+  display:inline-block;font-size:13px;text-transform:uppercase;letter-spacing:.08em;
+  padding:3px 12px;border-radius:50px;background:rgba(255,255,255,.2);margin-bottom:8px;
+}
+.aotd-card .info h3{font-size:28px;margin-bottom:4px}
+.aotd-card .info p{margin-bottom:12px;font-size:16px;opacity:.9;max-width:500px}
+.aotd-card .info .aotd-actions{display:flex;gap:8px}
+.aotd-card .info button{background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.3)}
+.aotd-card .info button:hover{background:var(--coral);border-color:var(--coral)}
+.aotd-card .emoji-big{position:absolute;z-index:2;font-size:72px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.3}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+
+/* ─── Category Grid ─── */
+.cat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;
+}
+.cat-card{
+  position:relative;border-radius:var(--radius);overflow:hidden;cursor:pointer;
+  min-height:180px;display:flex;align-items:flex-end;padding:20px;
+  background:var(--surface);border:2px solid transparent;
+  transition:transform .25s var(--spring),box-shadow .25s var(--ease),border-color .25s;
+  box-shadow:var(--shadow);
+}
+.cat-card:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.cat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.cat-card:active{transform:scale(.96)}
+.cat-card .bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.cat-card .gradient{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.2) 60%,transparent 100%);
+  z-index:1;
+}
+.cat-card .content{position:relative;z-index:2;color:#fff;width:100%}
+.cat-card .content .icon{font-size:36px;margin-bottom:4px;display:block}
+.cat-card .content .name{font-family:var(--font-head);font-size:22px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.cat-card.dogs{border-color:var(--coral)}
+.cat-card.cats{border-color:var(--teal)}
+.cat-card.birds{border-color:var(--sky)}
+.cat-card.fish{border-color:var(--ocean)}
+.cat-card.endangered{border-color:var(--rose)}
+.cat-card .skeleton-img{position:absolute;inset:0;z-index:0}
+.cat-card .emoji-placeholder{
+  position:relative;z-index:2;font-size:48px;margin:auto;display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;background:var(--tan);border-radius:var(--radius);
+  transition:background .3s;
+}
+
+/* ─── Modal ─── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;
+  align-items:center;justify-content:center;z-index:200;padding:24px;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  max-width:720px;width:100%;max-height:85vh;overflow:hidden;
+  box-shadow:var(--shadow-lg);animation:pop .3s var(--spring);
+  position:relative;transition:background .3s var(--ease);
+}
+@keyframes pop{0%{opacity:0;transform:scale(.92) translateY(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{
+  position:absolute;top:14px;right:14px;z-index:10;
+  background:var(--surface);color:var(--text);width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:18px;padding:0;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);transition:transform .2s var(--spring);
+}
+.modal-close:hover{transform:scale(1.1)}
+.modal-img-wrap{
+  width:100%;height:320px;background:var(--tan);display:flex;
+  align-items:center;justify-content:center;font-size:64px;overflow:hidden;
+  position:relative;
+}
+.modal-img{width:100%;height:100%;object-fit:contain;display:none;transition:opacity .3s}
+.modal-img.show{display:block}
+.modal-img-wrap.noimg .placeholder{display:block}
+.modal-img-wrap .placeholder{display:none}
+.modal-body{padding:24px 28px;overflow-y:auto;max-height:calc(85vh - 320px)}
+.modal-body h2{font-size:26px;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.modal-body .sub{font-size:14px;color:var(--text-muted);margin-bottom:16px}
+.modal-body .fact{margin-bottom:12px;font-size:17px;line-height:1.5}
+.modal-body .fact:last-child{margin-bottom:0}
+.modal-body .wiki-attrib{margin-top:16px;padding-top:12px;border-top:1px solid var(--tan);font-size:13px;color:var(--text-muted)}
+.modal-body .wiki-attrib a{font-weight:600}
+.audio-player{
+  margin-top:12px;padding:12px 16px;background:var(--tan);border-radius:var(--radius-sm);
+  display:flex;align-items:center;gap:12px;transition:background .3s;
+}
+.audio-player button{
+  background:var(--teal);width:40px;height:40px;border-radius:50%;padding:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
+}
+.audio-player .label{font-size:14px;color:var(--text-muted)}
+
+/* ─── Quiz ─── */
+.quiz-card{
+  background:var(--surface);border-radius:var(--radius-lg);padding:32px;
+  box-shadow:var(--shadow);border:2px solid var(--tan);transition:background .3s var(--ease),border-color .3s;
+}
+.q-progress{height:8px;background:var(--tan);border-radius:4px;margin-bottom:20px;overflow:hidden}
+.q-progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:width .4s var(--ease)}
+.q-score{font-family:var(--font-head);font-size:20px;margin-bottom:12px;text-align:right}
+.q-number{font-family:var(--font-head);font-size:17px;color:var(--text-muted);margin-bottom:6px}
+.q-text{font-size:22px;margin-bottom:20px;font-weight:600}
+.q-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.q-opt{
+  padding:14px 20px;border:2px solid var(--tan);border-radius:14px;
+  background:var(--bg);cursor:pointer;font-size:18px;font-family:var(--font-body);
+  text-align:left;color:var(--text);
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.q-opt:hover{background:var(--tan);border-color:var(--text-muted);transform:scale(1.02)}
+.q-opt.correct{background:#D4EDDA;border-color:var(--leaf);color:#155724}
+.q-opt.wrong{background:#F8D7DA;border-color:var(--rose);color:#721C24}
+.q-opt.disabled{pointer-events:none;opacity:.8}
+.quiz-end{text-align:center;padding:24px;display:none}
+.quiz-end.show{display:block}
+.quiz-end .big-score{font-family:var(--font-head);font-size:64px;margin-bottom:4px}
+.quiz-end .badge{font-family:var(--font-head);font-size:32px;color:var(--coral);margin-bottom:16px}
+.quiz-end p{margin-bottom:8px;color:var(--text-muted)}
+.q-streak{font-size:15px;color:var(--text-muted);margin-bottom:12px;min-height:1.5em}
+
+/* ─── Endangered ─── */
+.end-scroll{
+  display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-bottom:12px;scrollbar-width:thin;
+}
+.end-scroll::-webkit-scrollbar{height:6px}
+.end-scroll::-webkit-scrollbar-thumb{background:var(--tan);border-radius:3px}
+.end-card{
+  flex:0 0 320px;scroll-snap-align:start;
+  background:var(--surface);border-radius:var(--radius);padding:24px;
+  border:2px solid var(--rose);box-shadow:var(--shadow);
+  transition:background .3s;display:flex;flex-direction:column;gap:8px;
+}
+.end-card .end-emoji{font-size:48px}
+.end-card h3{font-size:22px;display:flex;align-items:center;gap:8px}
+.end-status{display:inline-block;padding:3px 12px;border-radius:50px;font-size:13px;font-weight:600;width:fit-content}
+.end-status.vulnerable{background:#FFF3CD;color:#856404}
+.end-status.endangered{background:#F8D7DA;color:#721C24}
+.end-status.critical{background:#F5C6CB;color:#721C24}
+.end-card .info{flex:1;font-size:16px;color:var(--text-muted)}
+.end-card .pop-bar{height:8px;background:var(--tan);border-radius:4px;overflow:hidden}
+.end-card .pop-bar-fill{height:100%;background:var(--rose);border-radius:4px;transition:width .5s var(--ease)}
+
+/* ─── Surprise button ─── */
+.btn-surprise{background:var(--gold);color:var(--navy);font-size:20px;padding:14px 32px;margin-top:16px}
+.btn-surprise:hover{background:var(--coral);color:#fff}
+
+/* ─── Skeleton ─── */
+.skeleton{
+  background:linear-gradient(90deg,var(--tan) 25%,color-mix(in srgb,var(--tan) 70%,#fff) 50%,var(--tan) 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ─── Confetti ─── */
+.confetti-piece{
+  position:fixed;pointer-events:none;z-index:9999;font-size:24px;
+  animation:confetti-fall 2s forwards;
+  aria-hidden:true;
+}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* ─── Footer ─── */
+.footer{text-align:center;padding:32px 24px;color:var(--text-muted);font-size:15px;border-top:1px solid var(--tan);margin-top:20px}
+
+/* ─── Responsive ─── */
+@media(max-width:640px){
+  .hero h2{font-size:24px}
+  .header h1{font-size:20px}
+  .header nav a{display:none}
+  .q-options{grid-template-columns:1fr}
+  .cat-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .cat-card{min-height:140px;padding:14px}
+  .modal-img-wrap{height:200px}
+  .modal-body{max-height:calc(85vh - 200px);padding:16px 20px}
+  .end-card{flex:0 0 260px}
+  .aotd-card{min-height:220px}
+  .aotd-card .info{padding:20px}
+  .aotd-card .info h3{font-size:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}
 }
 </style>
 </head>
 <body>
 
-<header class="header">
-  <h1>🦊 <span data-i18n="site_title">Animal Explorer</span></h1>
-  <button class="lang-btn" id="langToggle" onclick="toggleLang()">MS</button>
+<header class="header" role="banner">
+  <h1>🦊 <span data-i18n="site_title">Wild Wonders</span></h1>
+  <nav>
+    <a href="#explore" data-i18n="nav_explore">Explore</a>
+    <a href="#quiz" data-i18n="nav_quiz">Quiz</a>
+    <a href="#help" data-i18n="nav_help">Help</a>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+    <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Toggle language">MS</button>
+  </nav>
 </header>
 
-<section class="hero">
-  <h2 data-i18n="hero_title">Click an animal.</h2>
-  <p data-i18n="hero_sub">Learn something weird.</p>
-</section>
+<div class="hero">
+  <div class="hero-emoji">🦋</div>
+  <div class="hero-emoji">🐢</div>
+  <div class="hero-emoji">🦉</div>
+  <div class="hero-emoji">🦎</div>
+  <div class="hero-emoji">🐙</div>
+  <h2 data-i18n="hero_title">Discover wild wonders.</h2>
+  <p class="sub"><span class="fact-cycle" id="heroFact">Did you know? Octopuses have three hearts.</span></p>
+  <button class="btn-surprise" onclick="surpriseMe()" data-i18n="surprise_btn">🎲 Surprise Me!</button>
+</div>
 
-<section class="section">
-  <div id="aotdContainer">
-    <div class="aotd-card">
-      <div class="emoji-big">🦊</div>
-      <div class="info">
-        <div class="tag" data-i18n="aotd_tag">Animal of the Day</div>
-        <h3 id="aotdName">Finding an animal...</h3>
-        <p id="aotdFact" class="skeleton" style="height: 40px;"></p>
+<section class="section" id="aotdContainer">
+  <div class="aotd-card">
+    <div class="emoji-big">🦊</div>
+    <div class="overlay"></div>
+    <img class="bg-img" src="" alt="" id="aotdBg" style="display:none">
+    <div class="info" id="aotdInfo">
+      <div class="tag" id="aotdTag" data-i18n="aotd_tag">Animal of the Day</div>
+      <h3 id="aotdName">Finding an animal...</h3>
+      <p id="aotdFact" class="skeleton" style="height:40px;"></p>
+      <div class="aotd-actions">
         <button onclick="refreshAOTD()" data-i18n="aotd_btn">Next Animal →</button>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="explore">
   <h2 class="section-title"><span data-i18n="cat_title">Pick a Category</span> 🐾</h2>
-  <div class="cat-grid">
-    <div class="cat-card dogs" onclick="openCategory('dogs')">
-      <div class="icon">🐕</div>
-      <div class="name" data-i18n="cat_dogs">Dogs</div>
+  <div class="cat-grid" id="catGrid">
+    <div class="cat-card dogs" tabindex="0" role="button" data-cat="dogs" onclick="openCategory('dogs')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('dogs')" aria-label="Dogs">
+      <div class="emoji-placeholder" id="catPlh_dogs">🐕</div>
+      <div class="gradient"></div>
+      <div class="content"><span class="icon">🐕</span><span class="name" data-i18n="cat_dogs">Dogs</span></div>
     </div>
-    <div class="cat-card cats" onclick="openCategory('cats')">
-      <div class="icon">🐈</div>
-      <div class="name" data-i18n="cat_cats">Cats</div>
+    <div class="cat-card cats" tabindex="0" role="button" data-cat="cats" onclick="openCategory('cats')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('cats')" aria-label="Cats">
+      <div class="emoji-placeholder" id="catPlh_cats">🐈</div>
+      <div class="gradient"></div>
+      <div class="content"><span class="icon">🐈</span><span class="name" data-i18n="cat_cats">Cats</span></div>
     </div>
-    <div class="cat-card birds" onclick="openCategory('birds')">
-      <div class="icon">🐦</div>
-      <div class="name" data-i18n="cat_birds">Birds</div>
+    <div class="cat-card birds" tabindex="0" role="button" data-cat="birds" onclick="openCategory('birds')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('birds')" aria-label="Birds">
+      <div class="emoji-placeholder" id="catPlh_birds">🐦</div>
+      <div class="gradient"></div>
+      <div class="content"><span class="icon">🐦</span><span class="name" data-i18n="cat_birds">Birds</span></div>
     </div>
-    <div class="cat-card fish" onclick="openCategory('fish')">
-      <div class="icon">🐟</div>
-      <div class="name" data-i18n="cat_fish">Fish</div>
+    <div class="cat-card fish" tabindex="0" role="button" data-cat="fish" onclick="openCategory('fish')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('fish')" aria-label="Fish">
+      <div class="emoji-placeholder" id="catPlh_fish">🐟</div>
+      <div class="gradient"></div>
+      <div class="content"><span class="icon">🐟</span><span class="name" data-i18n="cat_fish">Fish</span></div>
     </div>
-    <div class="cat-card endangered" onclick="openCategory('endangered')">
-      <div class="icon">🌿</div>
-      <div class="name" data-i18n="cat_endangered">Endangered</div>
+    <div class="cat-card endangered" tabindex="0" role="button" data-cat="endangered" onclick="openCategory('endangered')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('endangered')" aria-label="Endangered animals">
+      <div class="emoji-placeholder" id="catPlh_endangered">🌿</div>
+      <div class="gradient"></div>
+      <div class="content"><span class="icon">🌿</span><span class="name" data-i18n="cat_endangered">Endangered</span></div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="quiz">
   <h2 class="section-title"><span data-i18n="quiz_title">Test Yourself</span> 🧠</h2>
   <div class="quiz-card">
     <div class="q-score"><span id="qScoreCorrect">0</span>/<span id="qScoreTotal">10</span> ⭐</div>
+    <div class="q-streak" id="qStreak"></div>
     <div class="q-progress"><div class="q-progress-fill" id="qProgress" style="width:0%"></div></div>
     <div id="qActive">
       <div class="q-number" id="qNumber">Question 1/10</div>
@@ -469,7 +414,7 @@ button:active { transform: scale(0.97); }
       <div class="q-options" id="qOptions"></div>
     </div>
     <div class="quiz-end" id="quizEnd">
-      <div class="big-score" id="finalScore">10/10</div>
+      <div class="big-score" id="finalScore">0/10</div>
       <div class="badge" id="finalBadge">🏆 Animal Genius</div>
       <p id="finalMsg">You really know your animals!</p>
       <button onclick="resetQuiz()" data-i18n="quiz_again">Play Again</button>
@@ -477,133 +422,106 @@ button:active { transform: scale(0.97); }
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="help">
   <h2 class="section-title"><span data-i18n="end_title">Need Our Help</span> 🌍</h2>
-  <div id="endContainer">
-    <div class="end-card">
-      <div class="emoji-big" style="font-size:56px;">🦏</div>
-      <div class="info">
-        <div class="end-status critical" id="endStatus">CRITICAL</div>
-        <h3 id="endName">Loading...</h3>
-        <p id="endFact" class="skeleton" style="height: 40px;"></p>
-      </div>
-    </div>
-  </div>
+  <div class="end-scroll" id="endScroll"></div>
 </section>
 
 <footer class="footer">
-  <p data-i18n="footer">Built with ❤️ for curious kids</p>
+  <p data-i18n="footer">Built with ❤️ for curious kids &mdash; <span id="footerAttrib"></span></p>
 </footer>
 
-    <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal" style="position:relative;">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-inner">
-      <div class="modal-img-wrap noimg" id="modalImgWrap">
-        <img class="modal-img" id="modalImg" src="" alt="">
-        <div class="placeholder">🦊</div>
+<div class="modal-overlay" id="modal"
+     role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+     onclick="if(event.target===this)closeModal()"
+     onkeydown="if(event.key==='Escape')closeModal()">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    <div class="modal-img-wrap noimg" id="modalImgWrap">
+      <img class="modal-img" id="modalImg" src="" alt="">
+      <div class="placeholder">🦊</div>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <h2 id="modalTitle"></h2>
+      <div class="sub" id="modalSub"></div>
+      <div id="modalFacts"></div>
+      <div class="wiki-attrib" id="wikiAttrib" style="display:none">
+        <a id="wikiLink" href="#" target="_blank" rel="noopener">From Wikipedia, CC BY-SA</a>
       </div>
-      <div class="modal-body">
-        <h2 id="modalTitle"></h2>
-        <div class="sub" id="modalSub"></div>
-        <div id="modalFacts"></div>
-        <div id="modalAudio" class="audio-player" style="display:none;">
-          <button>▶</button>
-          <div>
-            <div class="label">Bird Song</div>
-            <audio id="birdAudio" preload="none"></audio>
-          </div>
-        </div>
+      <div id="modalAudio" class="audio-player" style="display:none">
+        <button id="audioPlayBtn" aria-label="Play bird sound">▶</button>
+        <div><div class="label" id="audioLabel">Bird Song</div></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ponytail: i18n object for EN. MS object ready to add later without structural changes.
+// ─── i18n ───
 const i18n = {
   en: {
-    site_title: 'Animal Explorer',
-    hero_title: 'Click an animal.',
-    hero_sub: 'Learn something weird.',
-    aotd_tag: 'Animal of the Day',
-    aotd_btn: 'Next Animal →',
-    cat_title: 'Pick a Category',
-    cat_dogs: 'Dogs',
-    cat_cats: 'Cats',
-    cat_birds: 'Birds',
-    cat_fish: 'Fish',
-    cat_endangered: 'Endangered',
-    quiz_title: 'Test Yourself',
-    quiz_again: 'Play Again',
-    end_title: 'Need Our Help',
-    footer: 'Built with ❤️ for curious kids',
-    load_find: 'Finding an animal...',
-    bird_song: 'Bird Song',
-    cat_dogs_fact: 'A dog\'s nose print is as unique as a human fingerprint.',
-    cat_cats_fact: 'Cats sleep about 70% of their lives.',
-    cat_birds_fact: 'Some birds can mimic human speech.',
-    cat_fish_fact: 'Fish have been on Earth for over 500 million years.',
-    cat_end_fact: 'These species need our help to survive.'
+    site_title:'Wild Wonders',hero_title:'Discover wild wonders.',surprise_btn:'🎲 Surprise Me!',
+    aotd_tag:'Animal of the Day',aotd_btn:'Next Animal →',
+    cat_title:'Pick a Category',cat_dogs:'Dogs',cat_cats:'Cats',cat_birds:'Birds',cat_fish:'Fish',cat_endangered:'Endangered',
+    nav_explore:'Explore',nav_quiz:'Quiz',nav_help:'Help',
+    quiz_title:'Test Yourself',quiz_again:'Play Again',
+    end_title:'Need Our Help',footer:'Built with ❤️ for curious kids'
   }
 };
-
 let currentLang = 'en';
 
-function toggleLang() {
-  // ponytail: only MS stub exists. Adding Malay strings here is the only change needed.
+function toggleLang(){
   document.getElementById('langToggle').textContent = currentLang === 'en' ? 'EN' : 'MS';
   currentLang = currentLang === 'en' ? 'ms' : 'en';
+  document.documentElement.lang = currentLang === 'en' ? 'en' : 'ms';
   applyLang();
 }
-
-function applyLang() {
+function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
-    if (i18n[currentLang] && i18n[currentLang][key]) {
-      el.textContent = i18n[currentLang][key];
-    }
+    if (i18n[currentLang] && i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
   });
 }
-// ponytail: end i18n
 
-// ponytail: hardcoded facts paired with API images. Source control over quality > API fact quality.
+// ─── Dark Mode ───
+function toggleTheme(){
+  document.body.classList.toggle('dark-mode');
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+  localStorage.setItem('ww-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+}
+if (localStorage.getItem('ww-theme') === 'dark') document.body.classList.add('dark-mode');
+
+// ─── Facts Pool ───
 const facts = {
   dogs: [
     'A dog\'s nose print is as unique as your fingerprint.',
     'Dogs can understand up to 250 words and gestures.',
     'A Greyhound could outrun a cheetah in a long-distance race.',
     'Dogs have three eyelids — one just to keep their eyes wet.',
-    'A dog\'s sense of smell is 40x better than a human\'s.',
     'When dogs kick after pooping, they\'re leaving a scent message.',
     'Puppies are born blind and deaf — they find mom by touch.',
     'Dogs dream just like humans do.',
     'The Labrador Retriever has been America\'s favorite dog for 30+ years.',
-    'A dog\'s hearing is 10x sharper than a human\'s.',
     'Dogs can detect diseases like cancer by scent.',
     'The oldest known dog lived to be 29 years old.',
     'Dogs have about 1,700 taste buds (humans have 9,000).',
     'A dog wags its tail to the right when happy, left when nervous.',
-    'Dogs curl up to sleep to protect their organs from predators.',
     'The Basenji dog doesn\'t bark — it yodels.',
-    'Dogs can see in the dark better than humans.',
     'A dog\'s whiskers help them sense things in the dark.'
   ],
   cats: [
     'Cats sleep about 70% of their lives — that\'s 16 hours a day.',
     'A cat\'s purr vibrates at a frequency that can heal bones.',
     'Cats can\'t taste sweet things at all.',
-    'Each cat\'s nose has a unique pattern, like a fingerprint.',
     'A cat that\'s falling always lands on its feet — it\'s called the "righting reflex."',
     'Cats have 32 muscles in each ear, so they can rotate them 180°.',
     'Ancient Egyptians thought cats were magical — hurting one was a crime.',
     'A cat has 244 bones in its body (humans have 206).',
-    'Cats spend 70% of their lives sleeping — they\'re professional nappers.',
     'The world\'s richest cat had a fortune of £7 million.',
     'Cats can drink seawater — their kidneys can filter out the salt.',
     'A cat\'s brain is 90% similar to a human\'s brain.',
     'Cats sweat through their paw pads.',
-    'The record for the longest cat is 48.5 inches long.',
     'Cats can make over 100 different sounds.',
     'A group of cats is called a clowder.',
     'Cats walk like camels and giraffes — both right feet then both left.',
@@ -621,9 +539,7 @@ const facts = {
     'Birds have a special organ called a "syrinx" to sing complex songs.',
     'A parrot can live up to 80 years — longer than most dogs.',
     'The Arctic tern flies from pole to pole every year — that\'s 70,000 km.',
-    'Penguins have super soft feathers that keep them warm and dry.',
     'Owls have silent flight — their special feathers muffle the sound.',
-    'A chicken once lived for 18 months without its head.',
     'Birds see colors that humans can\'t see — they see ultraviolet!',
     'The kiwi bird has nostrils at the tip of its beak.',
     'Pigeons can recognize themselves in a mirror.',
@@ -633,12 +549,10 @@ const facts = {
     'Fish have been swimming on Earth for over 500 million years.',
     'A group of fish is called a school — but they\'re not learning!',
     'Clownfish can change sex — all are born male.',
-    'Some fish can produce light using a special organ.',
     'The whale shark is the biggest fish in the ocean — as big as a bus.',
     'Fish use their swim bladder to float up and down without paddling.',
     'A parrotfish produces sand when it poops — yes, it poops beaches.',
     'Goldfish can remember things for months, not just 3 seconds.',
-    'A fish\'s heart has only two chambers (human hearts have four).',
     'The mudskipper is a fish that can walk on land.',
     'Some fish can change color to blend in — like chameleons.',
     'The fastest fish is the sailfish — it swims at 110 km/h.',
@@ -666,18 +580,27 @@ const facts = {
     'Sumatran elephants could be gone in 30 years at the current rate.',
     'The African forest elephant helps plant trees by spreading seeds.',
     'Rhinos have been around for 50 million years — but might not survive this century.',
-    'Every piece of recycled paper helps save animal habitats.',
     'Even small actions like turning off lights help protect endangered species.'
   ]
 };
+const heroFacts = [
+  'Octopuses have three hearts.',
+  'A kangaroo can\'t walk backwards.',
+  'Cows have best friends.',
+  'Butterflies taste with their feet.',
+  'An ostrich\'s eye is bigger than its brain.',
+  'A sloth takes two weeks to digest its food.',
+  'Crows can remember human faces for years.',
+  'Sea otters hold hands when they sleep.'
+];
 
-// ponytail: Wikipedia search API gives unlimited random animal pages per category. Hardcoded fallback only.
+// ─── Wikipedia API ───
 const wikiQueries = {
-  dogs: ['dog breed', 'dog breeds list', 'popular dog', 'dog'],
-  cats: ['cat breed', 'cat breeds list', 'domestic cat', 'cat'],
-  birds: ['bird species', 'bird', 'passerine', 'bird list'],
-  fish: ['fish species', 'fish', 'freshwater fish', 'marine fish'],
-  endangered: ['endangered species', 'endangered animal', 'critically endangered species', 'vulnerable species']
+  dogs: ['dog breed','dog breeds list','popular dog','dog'],
+  cats: ['cat breed','cat breeds list','domestic cat','cat'],
+  birds: ['bird species','bird','passerine','bird list'],
+  fish: ['fish species','fish','freshwater fish','marine fish'],
+  endangered: ['endangered species','endangered animal','critically endangered species','vulnerable species']
 };
 
 async function findAnimalPage(category) {
@@ -699,86 +622,81 @@ async function getWikiPage(title) {
   } catch { return null; }
 }
 
+function stripHtml(s) { return s.replace(/<[^>]*>/g, ''); }
+
+// ponytail: synthetic chirp when real bird recording unavailable. Web Audio, no files needed.
 function chirp() {
-  // ponytail: synthetic chirp when real bird recording unavailable. Web Audio, no files needed.
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
-    [0, 0.15, 0.3].forEach(delay => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    [0,0.15,0.3].forEach(d => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(2500, ctx.currentTime + delay);
-      osc.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + delay + 0.08);
-      osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + delay + 0.2);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.25);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + delay);
-      osc.stop(ctx.currentTime + delay + 0.25);
+      osc.frequency.setValueAtTime(2500, ctx.currentTime + d);
+      osc.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + d + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + d + 0.2);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime + d);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d + 0.25);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + d); osc.stop(ctx.currentTime + d + 0.25);
     });
   } catch {}
 }
 
-// ponytail: Wikipedia displaytitle has HTML markup. Strip it to plain text.
-function stripHtml(s) { return s.replace(/<[^>]*>/g, ''); }
-
 const endangeredSpecies = [
-  { name: 'Sumatran Elephant', emoji: '🐘', status: 'Critical', statusClass: 'critical', fact: 'Only about 2,400 remain in the wild. Palm oil plantations are taking their home.' },
-  { name: 'Sea Turtle', emoji: '🐢', status: 'Vulnerable', statusClass: 'vulnerable', fact: 'They\'ve been around since dinosaurs — but plastic pollution is their biggest enemy.' },
-  { name: 'Orangutan', emoji: '🦧', status: 'Critical', statusClass: 'critical', fact: 'They share 97% of our DNA. Deforestation is pushing them to extinction.' },
-  { name: 'Amur Leopard', emoji: '🐆', status: 'Critical', statusClass: 'critical', fact: 'Fewer than 100 left in the wild. The rarest cat on Earth.' },
-  { name: 'Vaquita', emoji: '🐬', status: 'Critical', statusClass: 'critical', fact: 'The world\'s most endangered marine mammal — fewer than 10 remain.' }
+  { name:'Sumatran Elephant', emoji:'🐘', status:'Critical', statusClass:'critical', fact:'Only about 2,400 remain in the wild. Palm oil plantations are taking their home.', popPct:1 },
+  { name:'Sea Turtle', emoji:'🐢', status:'Vulnerable', statusClass:'vulnerable', fact:'They\'ve been around since dinosaurs — but plastic pollution is their biggest enemy.', popPct:10 },
+  { name:'Orangutan', emoji:'🦧', status:'Critical', statusClass:'critical', fact:'They share 97% of our DNA. Deforestation is pushing them to extinction.', popPct:3 },
+  { name:'Amur Leopard', emoji:'🐆', status:'Critical', statusClass:'critical', fact:'Fewer than 100 left in the wild. The rarest cat on Earth.', popPct:1 },
+  { name:'Vaquita', emoji:'🐬', status:'Critical', statusClass:'critical', fact:'The world\'s most endangered marine mammal — fewer than 10 remain.', popPct:1 },
+  { name:'Giant Panda', emoji:'🐼', status:'Vulnerable', statusClass:'vulnerable', fact:'Conservation efforts have helped — about 1,800 remain in the wild.', popPct:2 },
+  { name:'Cross River Gorilla', emoji:'🦍', status:'Critical', statusClass:'critical', fact:'Fewer than 300 remain. The rarest great ape on Earth.', popPct:1 }
 ];
 
+// ─── Quiz ───
 const quiz = [
-  { q: '🐱 What sound does a cat make?', opts: ['Meow', 'Bark', 'Roar', 'Chirp'], ans: 0 },
-  { q: '🐕 Dogs are mammals. Is that...', opts: ['True', 'False'], ans: 0 },
-  { q: '🐻‍❄️ A polar bear\'s skin is actually...', opts: ['White', 'Black', 'Pink', 'Brown'], ans: 1 },
-  { q: '🕷️ How many legs does a spider have?', opts: ['6', '8', '10', '12'], ans: 1 },
-  { q: '🐟 Fish sleep with their eyes open.', opts: ['True', 'False'], ans: 0 },
-  { q: '🏃 What is the fastest land animal?', opts: ['Lion', 'Cheetah', 'Horse', 'Rabbit'], ans: 1 },
-  { q: '🐧 Penguins can fly.', opts: ['True', 'False'], ans: 1 },
-  { q: '🐝 What do bees collect from flowers?', opts: ['Leaves', 'Seeds', 'Nectar', 'Water'], ans: 2 },
-  { q: '🐬 A dolphin is a type of fish.', opts: ['True', 'False'], ans: 1 },
-  { q: '🐼 What do giant pandas eat mostly?', opts: ['Fruit', 'Leaves', 'Bamboo', 'Insects'], ans: 2 },
-  { q: '🦁 Which big cat lives in a pride?', opts: ['Tiger', 'Lion', 'Leopard', 'Cheetah'], ans: 1 },
-  { q: '🦉 Owls can turn their heads 360 degrees.', opts: ['True', 'False'], ans: 1 },
-  { q: '🐘 What is an elephant\'s nose called?', opts: ['Snout', 'Trunk', 'Tusk', 'Horn'], ans: 1 },
-  { q: '🦈 A shark\'s skeleton is made of...', opts: ['Bone', 'Cartilage', 'Teeth', 'Rock'], ans: 1 },
-  { q: '🦎 Chameleons change color to match their mood.', opts: ['True', 'False'], ans: 0 },
-  { q: '🦒 What is a baby giraffe called?', opts: ['Cub', 'Calf', 'Foal', 'Kid'], ans: 1 },
-  { q: '🐸 Frogs drink water through their skin.', opts: ['True', 'False'], ans: 0 },
-  { q: '🦋 Butterflies taste with their...', opts: ['Tongue', 'Feet', 'Antennae', 'Wings'], ans: 1 },
-  { q: '🐊 Crocodiles can stick out their tongue.', opts: ['True', 'False'], ans: 1 },
-  { q: '🦩 Why are flamingos pink?', opts: ['From paint', 'From their food', 'Born that way', 'From water'], ans: 1 },
-  { q: '🐒 Which animal has the longest lifespan?', opts: ['Elephant', 'Tortoise', 'Parrot', 'Whale'], ans: 1 },
-  { q: '🦔 A group of porcupines is called a...', opts: ['Herd', 'Prickle', 'Group', 'Crowd'], ans: 1 },
-  { q: '🦛 Hippos can run faster than humans.', opts: ['True', 'False'], ans: 0 },
-  { q: '🐓 What bird lays the largest egg?', opts: ['Eagle', 'Ostrich', 'Penguin', 'Toucan'], ans: 1 },
-  { q: '🐙 How many hearts does an octopus have?', opts: ['1', '2', '3', '4'], ans: 2 }
+  { q:'🐱 What sound does a cat make?', opts:['Meow','Bark','Roar','Chirp'], ans:0 },
+  { q:'🐕 Dogs are mammals. Is that...', opts:['True','False'], ans:0 },
+  { q:'🐻‍❄️ A polar bear\'s skin is actually...', opts:['White','Black','Pink','Brown'], ans:1 },
+  { q:'🕷️ How many legs does a spider have?', opts:['6','8','10','12'], ans:1 },
+  { q:'🐟 Fish sleep with their eyes open.', opts:['True','False'], ans:0 },
+  { q:'🏃 What is the fastest land animal?', opts:['Lion','Cheetah','Horse','Rabbit'], ans:1 },
+  { q:'🐧 Penguins can fly.', opts:['True','False'], ans:1 },
+  { q:'🐝 What do bees collect from flowers?', opts:['Leaves','Seeds','Nectar','Water'], ans:2 },
+  { q:'🐬 A dolphin is a type of fish.', opts:['True','False'], ans:1 },
+  { q:'🐼 What do giant pandas eat mostly?', opts:['Fruit','Leaves','Bamboo','Insects'], ans:2 },
+  { q:'🦁 Which big cat lives in a pride?', opts:['Tiger','Lion','Leopard','Cheetah'], ans:1 },
+  { q:'🦉 Owls can turn their heads 360 degrees.', opts:['True','False'], ans:1 },
+  { q:'🐘 What is an elephant\'s nose called?', opts:['Snout','Trunk','Tusk','Horn'], ans:1 },
+  { q:'🦈 A shark\'s skeleton is made of...', opts:['Bone','Cartilage','Teeth','Rock'], ans:1 },
+  { q:'🦎 Chameleons change color to match their mood.', opts:['True','False'], ans:0 },
+  { q:'🦒 What is a baby giraffe called?', opts:['Cub','Calf','Foal','Kid'], ans:1 },
+  { q:'🐸 Frogs drink water through their skin.', opts:['True','False'], ans:0 },
+  { q:'🦋 Butterflies taste with their...', opts:['Tongue','Feet','Antennae','Wings'], ans:1 },
+  { q:'🐊 Crocodiles can stick out their tongue.', opts:['True','False'], ans:1 },
+  { q:'🦩 Why are flamingos pink?', opts:['From paint','From their food','Born that way','From water'], ans:1 },
+  { q:'🐒 Which animal has the longest lifespan?', opts:['Elephant','Tortoise','Parrot','Whale'], ans:1 },
+  { q:'🦔 A group of porcupines is called a...', opts:['Herd','Prickle','Group','Crowd'], ans:1 },
+  { q:'🦛 Hippos can run faster than humans.', opts:['True','False'], ans:0 },
+  { q:'🐓 What bird lays the largest egg?', opts:['Eagle','Ostrich','Penguin','Toucan'], ans:1 },
+  { q:'🐙 How many hearts does an octopus have?', opts:['1','2','3','4'], ans:2 }
 ];
-
 const QUIZ_PER_GAME = 10;
-function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 let quizSubset = shuffle([...quiz]).slice(0, QUIZ_PER_GAME);
-let qIdx = 0;
-let qScore = 0;
-let qDone = false;
+let qIdx = 0, qScore = 0, qDone = false, qStreak = 0;
 
-function renderQuiz() {
+function renderQuiz(){
   if (qIdx >= quizSubset.length) { finishQuiz(); return; }
   const q = quizSubset[qIdx];
-  document.getElementById('qNumber').textContent = `Question ${qIdx + 1}/${quizSubset.length}`;
+  document.getElementById('qNumber').textContent = `Question ${qIdx+1}/${quizSubset.length}`;
   document.getElementById('qText').textContent = q.q;
-  document.getElementById('qProgress').style.width = `${(qIdx / quizSubset.length) * 100}%`;
+  document.getElementById('qProgress').style.width = `${(qIdx/quizSubset.length)*100}%`;
   const opts = document.getElementById('qOptions');
   opts.innerHTML = '';
-  q.opts.forEach((opt, i) => {
+  q.opts.forEach((opt,i) => {
     const btn = document.createElement('button');
-    btn.className = 'q-opt';
-    btn.textContent = opt;
+    btn.className = 'q-opt'; btn.textContent = opt;
     btn.onclick = () => checkAnswer(i);
     opts.appendChild(btn);
   });
@@ -786,25 +704,29 @@ function renderQuiz() {
   document.getElementById('quizEnd').classList.remove('show');
 }
 
-function checkAnswer(idx) {
+function checkAnswer(idx){
   if (qDone) return;
   const q = quizSubset[qIdx];
   const opts = document.querySelectorAll('.q-opt');
-  opts.forEach((el, i) => {
+  opts.forEach((el,i) => {
     el.classList.add('disabled');
     if (i === q.ans) el.classList.add('correct');
     else if (i === idx && idx !== q.ans) el.classList.add('wrong');
   });
   if (idx === q.ans) {
-    qScore++;
+    qScore++; qStreak++;
     document.getElementById('qScoreCorrect').textContent = qScore;
+    document.getElementById('qStreak').textContent = qStreak >= 2 ? '🔥 ' + qStreak + ' streak!' : '';
     confettiBurst();
+  } else {
+    qStreak = 0;
+    document.getElementById('qStreak').textContent = '';
   }
   qDone = true;
   setTimeout(() => { qIdx++; qDone = false; renderQuiz(); }, 1200);
 }
 
-function finishQuiz() {
+function finishQuiz(){
   document.getElementById('qActive').style.display = 'none';
   document.getElementById('qProgress').style.width = '100%';
   document.getElementById('finalScore').textContent = `${qScore}/${quizSubset.length}`;
@@ -819,48 +741,95 @@ function finishQuiz() {
   confettiBurst();
 }
 
-function resetQuiz() {
+function resetQuiz(){
   quizSubset = shuffle([...quiz]).slice(0, QUIZ_PER_GAME);
-  qIdx = 0; qScore = 0; qDone = false;
+  qIdx = 0; qScore = 0; qDone = false; qStreak = 0;
   document.getElementById('qScoreCorrect').textContent = '0';
+  document.getElementById('qStreak').textContent = '';
   renderQuiz();
 }
 
-function confettiBurst() {
+function confettiBurst(){
   const emojis = ['🌟','⭐','🎉','🎊','✨','🦋','🌈'];
   for (let i = 0; i < 30; i++) {
     const el = document.createElement('div');
     el.className = 'confetti-piece';
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    el.style.left = Math.random() * 100 + 'vw';
-    el.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
-    el.style.fontSize = (Math.random() * 16 + 18) + 'px';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left = Math.random()*100+'vw';
+    el.style.animationDuration = (Math.random()*1.5+1)+'s';
+    el.style.fontSize = (Math.random()*16+18)+'px';
+    el.setAttribute('aria-hidden','true');
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 3000);
   }
 }
 
-// ponytail: API calls wrapped in try/catch with friendly fallbacks. No loading lib needed.
+// ─── API Wrapper ───
 async function apiGet(url) {
   try {
-    const r = await fetch(url, { mode: 'cors' });
+    const r = await fetch(url);
     if (!r.ok) throw new Error(r.status);
     return await r.json();
-  } catch (e) {
-    return null;
-  }
+  } catch { return null; }
 }
 
-async function refreshAOTD() {
-  const types = ['dogs', 'cats', 'birds', 'fish', 'endangered'];
-  const type = types[Math.floor(Math.random() * types.length)];
-  const container = document.getElementById('aotdContainer');
+// ponytail: sessionStorage cache for category card images. Cleared on page close, no stale-data bugs.
+function getCachedImg(category) {
+  try { return sessionStorage.getItem('ww_cat_img_' + category) } catch { return null }
+}
+function setCachedImg(category, url) {
+  try { sessionStorage.setItem('ww_cat_img_' + category, url) } catch {}
+}
+
+async function loadCatImages(){
+  for (const cat of ['dogs','cats','birds','fish','endangered']) {
+    const plh = document.getElementById('catPlh_'+cat);
+    if (!plh) continue;
+    const cached = getCachedImg(cat);
+    if (cached) { setCatBg(cat, cached); continue; }
+    const page = await findAnimalPage(cat);
+    if (!page) continue;
+    const data = await getWikiPage(page);
+    if (data?.thumbnail?.source) {
+      setCachedImg(cat, data.thumbnail.source);
+      setCatBg(cat, data.thumbnail.source);
+    }
+  }
+}
+function setCatBg(cat, src){
+  const card = document.querySelector(`.cat-card[data-cat="${cat}"]`);
+  if (!card) return;
+  const plh = document.getElementById('catPlh_'+cat);
+  if (!plh) return;
+  const img = document.createElement('img');
+  img.className = 'bg-img'; img.src = src; img.alt = '';
+  img.loading = 'lazy';
+  img.onload = () => { plh.style.display = 'none'; plh.parentNode.insertBefore(img, plh.nextSibling); };
+  img.onerror = () => {};
+}
+
+// ─── AOTD ───
+async function refreshAOTD(){
+  const types = ['dogs','cats','birds','fish','endangered'];
+  const type = types[Math.floor(Math.random()*types.length)];
   const names = { dogs:'Random Dog', cats:'Random Cat', birds:'Random Bird', fish:'Random Fish', endangered:'Endangered' };
   const emojis = { dogs:'🐕', cats:'🐈', birds:'🐦', fish:'🐟', endangered:'🌍' };
+  const tagNames = { dogs:'Dogs', cats:'Cats', birds:'Birds', fish:'Fish', endangered:'Endangered' };
 
-  container.innerHTML = `<div class="aotd-card"><div class="emoji-big">${emojis[type]}</div><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${i18n[currentLang].load_find || 'Finding an animal...'}</h3><p class="skeleton" style="height:40px;"></p></div></div>`;
+  const tag = document.getElementById('aotdTag');
+  const nameEl = document.getElementById('aotdName');
+  const factEl = document.getElementById('aotdFact');
+  const bg = document.getElementById('aotdBg');
 
-  let imgUrl = '', name = names[type], fact = facts[type][Math.floor(Math.random() * facts[type].length)];
+  tag.textContent = i18n[currentLang].aotd_tag || 'Animal of the Day';
+  nameEl.textContent = (i18n[currentLang].load_find || 'Finding an animal...');
+  factEl.className = 'skeleton'; factEl.style.height = '40px';
+  bg.style.display = 'none';
+  const card = tag.closest('.aotd-card');
+  if (card) { const em = card.querySelector('.emoji-big'); if (em) em.textContent = emojis[type]; }
+
+  let imgUrl = '', name = names[type], fact = facts[type][Math.floor(Math.random()*facts[type].length)];
+  let wikiUrl = '';
 
   if (type === 'dogs') {
     const d = await apiGet('https://dog.ceo/api/breeds/image/random');
@@ -875,47 +844,48 @@ async function refreshAOTD() {
         if (wikiData.displaytitle) name = stripHtml(wikiData.displaytitle).replace(/\(.*?\)/g,'').trim();
         const ext = stripHtml(wikiData.extract || '').split('.').slice(0,2).join('.');
         if (ext) fact = ext + '.';
+        wikiUrl = wikiData.content_urls?.desktop?.page || '';
       }
     }
   }
 
   if (!imgUrl) {
-    const fallback = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
-    container.innerHTML = `<div class="aotd-card"><div class="emoji-big">${fallback.emoji}</div><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${fallback.name}</h3><p>${fallback.fact}</p><button onclick="refreshAOTD()">${i18n[currentLang].aotd_btn || 'Next Animal →'}</button></div></div>`;
+    const s = endangeredSpecies[Math.floor(Math.random()*endangeredSpecies.length)];
+    nameEl.textContent = s.emoji + ' ' + s.name;
+    factEl.className = ''; factEl.textContent = s.fact;
     return;
   }
-  container.innerHTML = `<div class="aotd-card"><img src="${imgUrl}" alt="${name}" loading="lazy"><div class="info"><div class="tag">${i18n[currentLang].aotd_tag || 'Animal of the Day'}</div><h3>${name}</h3><p>${fact}</p><button onclick="refreshAOTD()">${i18n[currentLang].aotd_btn || 'Next Animal →'}</button></div></div>`;
+  nameEl.textContent = name;
+  factEl.className = ''; factEl.textContent = fact;
+  bg.src = imgUrl; bg.alt = name; bg.style.display = 'block';
 }
 
-function setModalImg(src) {
-  const wrap = document.getElementById('modalImgWrap');
-  const img = document.getElementById('modalImg');
-  if (src) {
-    img.src = src;
-    img.classList.add('show');
-    wrap.classList.remove('noimg');
-  } else {
-    img.classList.remove('show');
-    wrap.classList.add('noimg');
-  }
-}
+// ─── Modal ───
+let lastFocused = null;
 
-async function openCategory(type) {
+function openCategory(type){
   const modal = document.getElementById('modal');
   const title = document.getElementById('modalTitle');
   const sub = document.getElementById('modalSub');
   const factsDiv = document.getElementById('modalFacts');
   const audioDiv = document.getElementById('modalAudio');
+  const attrib = document.getElementById('wikiAttrib');
+  const link = document.getElementById('wikiLink');
   const placeholder = document.querySelector('#modalImgWrap .placeholder');
+  const closeBtn = document.querySelector('.modal-close');
 
+  lastFocused = document.activeElement;
   audioDiv.style.display = 'none';
+  attrib.style.display = 'none';
   setModalImg(null);
   placeholder.textContent = { dogs:'🐕', cats:'🐈', birds:'🐦', fish:'🐟', endangered:'🌍' }[type] || '🔍';
   modal.classList.add('open');
+  modal.focus();
+  if (closeBtn) setTimeout(() => closeBtn.focus(), 100);
 
   title.textContent = '';
   sub.textContent = '';
-  factsDiv.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
+  factsDiv.innerHTML = '<div class="skeleton" style="height:60px"></div>';
 
   const catMeta = {
     dogs: ['🐕', i18n[currentLang].cat_dogs || 'Dog', "Man's best friend"],
@@ -925,87 +895,144 @@ async function openCategory(type) {
     endangered: ['🌍', i18n[currentLang].cat_endangered || 'Endangered', 'Need our help']
   };
   const meta = catMeta[type];
+  let wikiUrl = '';
 
-  // Pick a Wikipedia page — dynamic search, unlimited variety
-  const page = await findAnimalPage(type);
-  let wikiData = page ? await getWikiPage(page) : null;
+  (async () => {
+    const page = await findAnimalPage(type);
+    let wikiData = page ? await getWikiPage(page) : null;
 
-  if (wikiData) {
-    if (wikiData.thumbnail?.source) setModalImg(wikiData.thumbnail.source);
-    const cleanName = stripHtml(wikiData.displaytitle || meta[1]).replace(/\(.*?\)/g,'').trim();
-    title.textContent = `${meta[0]} ${cleanName}`;
-    sub.textContent = meta[2];
-
-    const extract = stripHtml(wikiData.extract || '').split('. ').slice(0, 2).join('. ') + '.';
-    if (extract.length > 10) {
-      factsDiv.innerHTML = `<p class="fact">${extract}</p>`;
+    if (wikiData) {
+      if (wikiData.thumbnail?.source) setModalImg(wikiData.thumbnail.source);
+      const cleanName = stripHtml(wikiData.displaytitle || meta[1]).replace(/\(.*?\)/g,'').trim();
+      title.textContent = `${meta[0]} ${cleanName}`;
+      document.getElementById('modalImg').alt = cleanName;
+      sub.textContent = meta[2];
+      const extract = stripHtml(wikiData.extract || '').split('. ').slice(0,2).join('. ') + '.';
+      factsDiv.innerHTML = '';
+      if (extract.length > 10) factsDiv.innerHTML = `<p class="fact">${extract}</p>`;
+      const catFacts = facts[type] || facts.dogs;
+      catFacts.forEach(f => { factsDiv.innerHTML += `<p class="fact">• ${f}</p>`; });
+      wikiUrl = wikiData.content_urls?.desktop?.page || '';
+    } else {
+      title.textContent = `${meta[0]} ${meta[1]}`;
+      sub.textContent = meta[2];
+      const catFacts = facts[type] || facts.dogs;
+      factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
     }
-    const catFacts = facts[type] || facts.dogs;
-    const shown = new Set();
-    catFacts.forEach(f => {
-      if (!shown.has(f)) { shown.add(f); factsDiv.innerHTML += `<p class="fact">• ${f}</p>`; }
-    });
-  } else {
-    title.textContent = `${meta[0]} ${meta[1]}`;
-    sub.textContent = meta[2];
-    const catFacts = facts[type] || facts.dogs;
-    factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
-  }
 
-  // Endangered — override title with specific species
-  if (type === 'endangered') {
-    const s = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
-    title.textContent = s.emoji + ' ' + s.name;
-    sub.textContent = 'Status: ' + s.status;
-    if (!wikiData || !wikiData.thumbnail?.source) {
-      const img = await getWikiPage(s.name);
-      if (img?.thumbnail?.source) setModalImg(img.thumbnail.source);
+    if (wikiUrl) {
+      attrib.style.display = 'block';
+      link.href = wikiUrl;
     }
-  }
 
-  // Birds — fresh sound every click
-  if (type === 'birds') {
-    try {
-      const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1&pageSize=20'));
-      const xc = await r.json();
-      if (xc?.recordings?.length > 0) {
-        const recs = xc.recordings.filter(r => r.file);
-        if (recs.length > 0) {
-          const rec = recs[Math.floor(Math.random() * Math.min(recs.length, 5))];
-          audioDiv.style.display = 'flex';
-          const audio = document.getElementById('birdAudio');
-          audio.src = 'https:' + rec.file;
-          document.querySelector('#modalAudio .label').textContent = (rec.en || rec.fr || 'Bird') + ' — ' + (rec.type || 'song');
-          document.querySelector('#modalAudio button').onclick = () => audio.play();
-          return;
-        }
+    if (type === 'endangered') {
+      const s = endangeredSpecies[Math.floor(Math.random()*endangeredSpecies.length)];
+      title.textContent = s.emoji + ' ' + s.name;
+      sub.textContent = 'Status: ' + s.status;
+      if (!wikiData || !wikiData.thumbnail?.source) {
+        const img = await getWikiPage(s.name);
+        if (img?.thumbnail?.source) setModalImg(img.thumbnail.source);
       }
-    } catch {}
-    audioDiv.style.display = 'flex';
-    document.querySelector('#modalAudio .label').textContent = '🔊 Synthetic chirp';
-    document.querySelector('#modalAudio button').onclick = chirp;
+    }
+
+    if (type === 'birds') {
+      try {
+        const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1&pageSize=20'));
+        const xc = await r.json();
+        if (xc?.recordings?.length > 0) {
+          const recs = xc.recordings.filter(r => r.file);
+          if (recs.length > 0) {
+            const rec = recs[Math.floor(Math.random()*Math.min(recs.length,5))];
+            audioDiv.style.display = 'flex';
+            document.getElementById('audioLabel').textContent = (rec.en || rec.fr || 'Bird') + ' — ' + (rec.type || 'song');
+            document.getElementById('audioPlayBtn').onclick = () => {
+              const audio = document.getElementById('birdAudio') || (() => {
+                const a = new Audio(); a.id = 'birdAudio'; a.preload = 'none';
+                document.body.appendChild(a); return a;
+              })();
+              audio.src = 'https:' + rec.file;
+              audio.play();
+            };
+            return;
+          }
+        }
+      } catch {}
+      audioDiv.style.display = 'flex';
+      document.getElementById('audioLabel').textContent = '🔊 Synthetic chirp';
+      document.getElementById('audioPlayBtn').onclick = chirp;
+    }
+  })();
+}
+
+function setModalImg(src){
+  const wrap = document.getElementById('modalImgWrap');
+  const img = document.getElementById('modalImg');
+  if (src) {
+    img.src = src; img.classList.add('show');
+    wrap.classList.remove('noimg');
+  } else {
+    img.classList.remove('show');
+    wrap.classList.add('noimg');
   }
 }
 
-function closeModal() {
+function closeModal(){
   document.getElementById('modal').classList.remove('open');
-  document.getElementById('birdAudio').pause();
+  const audio = document.getElementById('birdAudio');
+  if (audio) audio.pause();
+  if (lastFocused) lastFocused.focus();
 }
 
+// ─── Surprise Me ───
+function surpriseMe(){
+  const types = ['dogs','cats','birds','fish','endangered'];
+  openCategory(types[Math.floor(Math.random()*types.length)]);
+}
+
+// ─── Hero Fact Cycle ───
+let factIdx = 0;
+function cycleHeroFact(){
+  const el = document.getElementById('heroFact');
+  if (el) {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      factIdx = (factIdx + 1) % heroFacts.length;
+      el.textContent = 'Did you know? ' + heroFacts[factIdx];
+      el.style.opacity = '1';
+    }, 400);
+  }
+}
+
+// ─── Endangered ───
+function renderEndangered(){
+  const scroll = document.getElementById('endScroll');
+  scroll.innerHTML = '';
+  shuffle([...endangeredSpecies]).forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'end-card';
+    card.innerHTML = `
+      <div class="end-emoji">${s.emoji}</div>
+      <h3>${s.name}</h3>
+      <div class="end-status ${s.statusClass}">${s.status.toUpperCase()}</div>
+      <div class="info">${s.fact}</div>
+      <div class="pop-bar"><div class="pop-bar-fill" style="width:${s.popPct}%"></div></div>
+    `;
+    scroll.appendChild(card);
+  });
+}
+
+// ─── Init ───
 document.addEventListener('DOMContentLoaded', () => {
   refreshAOTD();
   renderQuiz();
-  // endangered section
   renderEndangered();
+  loadCatImages();
+  setInterval(cycleHeroFact, 5000);
+  // keyboard: Escape closes modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
+  });
 });
-
-function renderEndangered() {
-  const s = endangeredSpecies[Math.floor(Math.random() * endangeredSpecies.length)];
-  document.getElementById('endStatus').textContent = s.status.toUpperCase();
-  document.getElementById('endStatus').className = 'end-status ' + s.statusClass;
-  document.getElementById('endName').textContent = s.emoji + ' ' + s.name;
-  document.getElementById('endFact').textContent = s.fact;
-}
 </script>
 </body>
 </html>
