@@ -1,1005 +1,1687 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wild Wonders — Animal Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
-<style>
-/* ─── Reset & Vars ─── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#FFF5E6;--surface:#fff;--text:#3D2C2C;--text-muted:#7A6B6B;
-  --coral:#E86A4F;--teal:#3A9D9D;--tan:#E8D5B7;--sky:#6BB8D4;--ocean:#4DB8FF;
-  --rose:#D46B5E;--gold:#F5C842;--leaf:#8DB580;--navy:#2C3E50;
-  --shadow:0 4px 20px rgba(61,44,44,0.08);
-  --shadow-lg:0 12px 40px rgba(61,44,44,0.15);
-  --font-head:'Patrick Hand',cursive;
-  --font-body:system-ui,-apple-system,sans-serif;
-  --radius:20px;--radius-sm:12px;--radius-lg:28px;
-  --spring:cubic-bezier(0.34,1.56,0.64,1);
-  --ease:cubic-bezier(0.22,1,0.36,1);
-}
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#12121e;--surface:#1e1e32;--text:#e0dcd6;--text-muted:#8f8a84;
-    --coral:#D45A3E;--teal:#3AA0A0;--tan:#2a2a3a;--shadow:0 4px 20px rgba(0,0,0,0.3);
-    --shadow-lg:0 12px 40px rgba(0,0,0,0.5);
-  }
-}
-body.dark-mode{
-  --bg:#12121e;--surface:#1e1e32;--text:#e0dcd6;--text-muted:#8f8a84;
-  --coral:#D45A3E;--teal:#3AA0A0;--tan:#2a2a3a;--shadow:0 4px 20px rgba(0,0,0,0.3);
-  --shadow-lg:0 12px 40px rgba(0,0,0,0.5);
-}
-body{
-  font-family:var(--font-body);background:var(--bg);color:var(--text);
-  font-size:18px;line-height:1.6;min-height:100vh;
-  transition:background .3s var(--ease),color .3s var(--ease);
-}
-h1,h2,h3,h4{font-family:var(--font-head);font-weight:400;letter-spacing:.02em}
-img{max-width:100%;height:auto;display:block}
-button{
-  cursor:pointer;border:none;font-family:var(--font-head);font-size:18px;
-  padding:10px 24px;border-radius:50px;background:var(--coral);color:#fff;
-  transition:transform .2s var(--spring),box-shadow .2s var(--ease);
-}
-button:hover{transform:scale(1.05);box-shadow:0 6px 16px rgba(0,0,0,.15)}
-button:active{transform:scale(.97)}
-button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-a{color:var(--teal);text-decoration:none}
-a:hover{text-decoration:underline}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wild Wonders Malaysia | Dunia Haiwan Interaktif + Public API</title>
+  <!-- Google Fonts mesra kanak-kanak -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
+  <style>
+    :root {
+      --bg-sky: #e0f7fa;
+      --bg-jungle: #e8f5e9;
+      --primary: #2e7d32;
+      --primary-light: #66bb6a;
+      --secondary: #ff9800;
+      --accent: #ff4081;
+      --card-bg: #ffffff;
+      --text-main: #1b5e20;
+      --text-dark: #263238;
+      --shadow: 0 8px 0 rgba(0, 0, 0, 0.12);
+      --radius: 24px;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-/* ─── Header ─── */
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:12px 24px;position:sticky;top:0;z-index:100;
-  background:rgba(255,245,230,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--tan);transition:background .3s var(--ease);
-}
-.dark-mode .header,.dark-body .header{background:rgba(18,18,30,.85)}
-.header h1{font-size:26px;display:flex;align-items:center;gap:8px}
-.header nav{display:flex;align-items:center;gap:8px}
-.header nav a{
-  font-family:var(--font-head);font-size:16px;color:var(--text-muted);
-  padding:4px 10px;border-radius:8px;transition:color .2s,background .2s;
-}
-.header nav a:hover{color:var(--text);background:var(--tan);text-decoration:none}
-.lang-btn,.theme-btn{
-  background:var(--tan);color:var(--text);font-size:15px;padding:6px 14px;
-  min-width:40px;border-radius:50px;transition:background .2s,transform .2s;
-}
-.lang-btn:hover,.theme-btn:hover{background:var(--coral);color:#fff;transform:scale(1.05)}
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(180deg, var(--bg-sky) 0%, var(--bg-jungle) 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
 
-/* ─── Hero ─── */
-.hero{
-  text-align:center;padding:48px 24px 32px;position:relative;overflow:hidden;
-}
-.hero h2{font-size:clamp(28px,5vw,48px);margin-bottom:8px;animation:fadeUp .6s var(--spring)}
-.hero .sub{
-  font-size:20px;color:var(--text-muted);min-height:2em;
-  transition:opacity .4s;position:relative;
-}
-.hero .sub .fact-cycle{animation:fadeInOut 4s var(--ease) infinite}
-@keyframes fadeInOut{
-  0%,100%{opacity:1}25%{opacity:1}50%{opacity:0}75%{opacity:0}
-}
-@media(prefers-reduced-motion:reduce){
-  .hero h2,.hero .sub{animation:none}
-  .hero .sub .fact-cycle{animation:none}
-}
+    h1, h2, h3, .font-heading {
+      font-family: 'Fredoka', sans-serif;
+      letter-spacing: 0.5px;
+    }
 
-/* ─── Sections ─── */
-.section{padding:48px 24px;max-width:1040px;margin:0 auto}
-.section-title{
-  font-size:28px;margin-bottom:20px;display:flex;align-items:center;gap:8px;
-  scroll-margin-top:72px;
-}
+    /* Canvas Konfeti */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
 
-/* ─── AOTD ─── */
-.aotd-card{
-  position:relative;border-radius:var(--radius-lg);overflow:hidden;
-  min-height:280px;display:flex;align-items:flex-end;
-  box-shadow:var(--shadow-lg);animation:fadeUp .5s var(--spring);
-}
-.aotd-card .bg-img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
-}
-.aotd-card .overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.3) 50%,transparent 100%);
-  z-index:1;
-}
-.aotd-card .info{
-  position:relative;z-index:2;padding:32px;color:#fff;width:100%;
-}
-.aotd-card .info .tag{
-  display:inline-block;font-size:13px;text-transform:uppercase;letter-spacing:.08em;
-  padding:3px 12px;border-radius:50px;background:rgba(255,255,255,.2);margin-bottom:8px;
-}
-.aotd-card .info h3{font-size:28px;margin-bottom:4px}
-.aotd-card .info p{margin-bottom:12px;font-size:16px;opacity:.9;max-width:500px}
-.aotd-card .info .aotd-actions{display:flex;gap:8px}
-.aotd-card .info button{background:rgba(255,255,255,.2);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.3)}
-.aotd-card .info button:hover{background:var(--coral);border-color:var(--coral)}
-.aotd-card .emoji-big{position:absolute;z-index:2;font-size:72px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.3}
-@keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+    /* Header & Bar Gamifikasi */
+    header {
+      background: linear-gradient(135deg, #1b5e20, #43a047);
+      color: white;
+      padding: 18px 24px;
+      border-bottom: 6px solid #144318;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-/* ─── Category Grid ─── */
-.cat-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;
-}
-.cat-card{
-  position:relative;border-radius:var(--radius);overflow:hidden;cursor:pointer;
-  min-height:180px;display:flex;align-items:flex-end;padding:20px;
-  background:var(--surface);border:2px solid transparent;
-  transition:transform .25s var(--spring),box-shadow .25s var(--ease),border-color .25s;
-  box-shadow:var(--shadow);
-}
-.cat-card:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
-.cat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
-.cat-card:active{transform:scale(.96)}
-.cat-card .bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.cat-card .gradient{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.2) 60%,transparent 100%);
-  z-index:1;
-}
-.cat-card .content{position:relative;z-index:2;color:#fff;width:100%}
-.cat-card .content .icon{font-size:36px;margin-bottom:4px;display:block}
-.cat-card .content .name{font-family:var(--font-head);font-size:22px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
-.cat-card.dogs{border-color:var(--coral)}
-.cat-card.cats{border-color:var(--teal)}
-.cat-card.birds{border-color:var(--sky)}
-.cat-card.fish{border-color:var(--ocean)}
-.cat-card.endangered{border-color:var(--rose)}
-.cat-card .skeleton-img{position:absolute;inset:0;z-index:0}
-.cat-card .emoji-placeholder{
-  position:relative;z-index:2;font-size:48px;margin:auto;display:flex;align-items:center;justify-content:center;
-  width:100%;height:100%;background:var(--tan);border-radius:var(--radius);
-  transition:background .3s;
-}
+    .header-container {
+      max-width: 1150px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
 
-/* ─── Modal ─── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;
-  align-items:center;justify-content:center;z-index:200;padding:24px;
-  backdrop-filter:blur(4px);
-}
-.modal-overlay.open{display:flex}
-.modal{
-  background:var(--surface);border-radius:var(--radius-lg);
-  max-width:720px;width:100%;max-height:85vh;overflow:hidden;
-  box-shadow:var(--shadow-lg);animation:pop .3s var(--spring);
-  position:relative;transition:background .3s var(--ease);
-}
-@keyframes pop{0%{opacity:0;transform:scale(.92) translateY(10px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-.modal-close{
-  position:absolute;top:14px;right:14px;z-index:10;
-  background:var(--surface);color:var(--text);width:38px;height:38px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:18px;padding:0;
-  box-shadow:0 2px 12px rgba(0,0,0,.2);transition:transform .2s var(--spring);
-}
-.modal-close:hover{transform:scale(1.1)}
-.modal-img-wrap{
-  width:100%;height:320px;background:var(--tan);display:flex;
-  align-items:center;justify-content:center;font-size:64px;overflow:hidden;
-  position:relative;
-}
-.modal-img{width:100%;height:100%;object-fit:contain;display:none;transition:opacity .3s}
-.modal-img.show{display:block}
-.modal-img-wrap.noimg .placeholder{display:block}
-.modal-img-wrap .placeholder{display:none}
-.modal-body{padding:24px 28px;overflow-y:auto;max-height:calc(85vh - 320px)}
-.modal-body h2{font-size:26px;margin-bottom:2px;display:flex;align-items:center;gap:8px}
-.modal-body .sub{font-size:14px;color:var(--text-muted);margin-bottom:16px}
-.modal-body .fact{margin-bottom:12px;font-size:17px;line-height:1.5}
-.modal-body .fact:last-child{margin-bottom:0}
-.modal-body .wiki-attrib{margin-top:16px;padding-top:12px;border-top:1px solid var(--tan);font-size:13px;color:var(--text-muted)}
-.modal-body .wiki-attrib a{font-weight:600}
-.audio-player{
-  margin-top:12px;padding:12px 16px;background:var(--tan);border-radius:var(--radius-sm);
-  display:flex;align-items:center;gap:12px;transition:background .3s;
-}
-.audio-player button{
-  background:var(--teal);width:40px;height:40px;border-radius:50%;padding:0;
-  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
-}
-.audio-player .label{font-size:14px;color:var(--text-muted)}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-/* ─── Quiz ─── */
-.quiz-card{
-  background:var(--surface);border-radius:var(--radius-lg);padding:32px;
-  box-shadow:var(--shadow);border:2px solid var(--tan);transition:background .3s var(--ease),border-color .3s;
-}
-.q-progress{height:8px;background:var(--tan);border-radius:4px;margin-bottom:20px;overflow:hidden}
-.q-progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:width .4s var(--ease)}
-.q-score{font-family:var(--font-head);font-size:20px;margin-bottom:12px;text-align:right}
-.q-number{font-family:var(--font-head);font-size:17px;color:var(--text-muted);margin-bottom:6px}
-.q-text{font-size:22px;margin-bottom:20px;font-weight:600}
-.q-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.q-opt{
-  padding:14px 20px;border:2px solid var(--tan);border-radius:14px;
-  background:var(--bg);cursor:pointer;font-size:18px;font-family:var(--font-body);
-  text-align:left;color:var(--text);
-  transition:background .15s,border-color .15s,transform .15s;
-}
-.q-opt:hover{background:var(--tan);border-color:var(--text-muted);transform:scale(1.02)}
-.q-opt.correct{background:#D4EDDA;border-color:var(--leaf);color:#155724}
-.q-opt.wrong{background:#F8D7DA;border-color:var(--rose);color:#721C24}
-.q-opt.disabled{pointer-events:none;opacity:.8}
-.quiz-end{text-align:center;padding:24px;display:none}
-.quiz-end.show{display:block}
-.quiz-end .big-score{font-family:var(--font-head);font-size:64px;margin-bottom:4px}
-.quiz-end .badge{font-family:var(--font-head);font-size:32px;color:var(--coral);margin-bottom:16px}
-.quiz-end p{margin-bottom:8px;color:var(--text-muted)}
-.q-streak{font-size:15px;color:var(--text-muted);margin-bottom:12px;min-height:1.5em}
+    .brand-logo {
+      font-size: 2.6rem;
+      animation: bounceSlow 2.5s infinite ease-in-out;
+    }
 
-/* ─── Endangered ─── */
-.end-scroll{
-  display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;
-  padding-bottom:12px;scrollbar-width:thin;
-}
-.end-scroll::-webkit-scrollbar{height:6px}
-.end-scroll::-webkit-scrollbar-thumb{background:var(--tan);border-radius:3px}
-.end-card{
-  flex:0 0 320px;scroll-snap-align:start;
-  background:var(--surface);border-radius:var(--radius);padding:24px;
-  border:2px solid var(--rose);box-shadow:var(--shadow);
-  transition:background .3s;display:flex;flex-direction:column;gap:8px;
-}
-.end-card .end-emoji{font-size:48px}
-.end-card h3{font-size:22px;display:flex;align-items:center;gap:8px}
-.end-status{display:inline-block;padding:3px 12px;border-radius:50px;font-size:13px;font-weight:600;width:fit-content}
-.end-status.vulnerable{background:#FFF3CD;color:#856404}
-.end-status.endangered{background:#F8D7DA;color:#721C24}
-.end-status.critical{background:#F5C6CB;color:#721C24}
-.end-card .info{flex:1;font-size:16px;color:var(--text-muted)}
-.end-card .pop-bar{height:8px;background:var(--tan);border-radius:4px;overflow:hidden}
-.end-card .pop-bar-fill{height:100%;background:var(--rose);border-radius:4px;transition:width .5s var(--ease)}
+    .brand-title h1 {
+      font-size: 1.8rem;
+      line-height: 1.1;
+      text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
+    }
 
-/* ─── Surprise button ─── */
-.btn-surprise{background:var(--gold);color:var(--navy);font-size:20px;padding:14px 32px;margin-top:16px}
-.btn-surprise:hover{background:var(--coral);color:#fff}
+    .brand-title p {
+      font-size: 0.9rem;
+      opacity: 0.95;
+      font-weight: 700;
+      color: #fff59d;
+    }
 
-/* ─── Skeleton ─── */
-.skeleton{
-  background:linear-gradient(90deg,var(--tan) 25%,color-mix(in srgb,var(--tan) 70%,#fff) 50%,var(--tan) 75%);
-  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;
-}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-/* ─── Confetti ─── */
-.confetti-piece{
-  position:fixed;pointer-events:none;z-index:9999;font-size:24px;
-  animation:confetti-fall 2s forwards;
-  aria-hidden:true;
-}
-@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+    .badge-pill {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      backdrop-filter: blur(4px);
+    }
 
-/* ─── Footer ─── */
-.footer{text-align:center;padding:32px 24px;color:var(--text-muted);font-size:15px;border-top:1px solid var(--tan);margin-top:20px}
+    .star-pill {
+      background: #ffd54f;
+      color: #5d4037;
+      border: 3px solid #ffb300;
+      box-shadow: 0 4px 0 #ffa000;
+      transition: transform 0.2s;
+    }
 
-/* ─── Responsive ─── */
-@media(max-width:640px){
-  .hero h2{font-size:24px}
-  .header h1{font-size:20px}
-  .header nav a{display:none}
-  .q-options{grid-template-columns:1fr}
-  .cat-grid{grid-template-columns:repeat(2,1fr);gap:12px}
-  .cat-card{min-height:140px;padding:14px}
-  .modal-img-wrap{height:200px}
-  .modal-body{max-height:calc(85vh - 200px);padding:16px 20px}
-  .end-card{flex:0 0 260px}
-  .aotd-card{min-height:220px}
-  .aotd-card .info{padding:20px}
-  .aotd-card .info h3{font-size:22px}
-}
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}
-}
-</style>
+    .star-pill.pop {
+      transform: scale(1.25);
+    }
+
+    .sound-btn {
+      background: #ffffff;
+      color: var(--primary);
+      border: 3px solid #c8e6c9;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+      transition: all 0.15s;
+    }
+
+    .sound-btn:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    /* Navigasi Tab */
+    .mode-tabs {
+      max-width: 900px;
+      margin: 24px auto 16px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      padding: 0 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 20px;
+      border: 3px solid #2e7d32;
+      background: white;
+      color: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 6px 0 #1b5e20;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: #ff9800;
+      color: white;
+      border-color: #e65100;
+      box-shadow: 0 6px 0 #bf360c;
+    }
+
+    .tab-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #bf360c;
+    }
+
+    /* Container Utama */
+    main {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .section-panel {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .section-panel.active {
+      display: block;
+    }
+
+    /* Bar Carian Public API &Tambah Haiwan */
+    .api-explorer-bar {
+      background: linear-gradient(135deg, #fff8e1, #ffffff);
+      border: 3px solid #ffb300;
+      border-radius: 24px;
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 0 rgba(255, 179, 0, 0.25);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .api-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1 1 280px;
+    }
+
+    .api-info-icon {
+      font-size: 2.3rem;
+    }
+
+    .api-info h3 {
+      color: #e65100;
+      font-size: 1.15rem;
+    }
+
+    .api-info p {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #5d4037;
+    }
+
+    .api-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1 1 360px;
+      justify-content: flex-end;
+    }
+
+    .api-input {
+      flex: 1 1 180px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 3px solid #ffe082;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      outline: none;
+      color: #37474f;
+    }
+
+    .api-input:focus {
+      border-color: #ff9800;
+    }
+
+    .btn-api {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s;
+    }
+
+    .btn-api-search {
+      background: #ff9800;
+      box-shadow: 0 4px 0 #e65100;
+    }
+
+    .btn-api-random {
+      background: #8e24aa;
+      box-shadow: 0 4px 0 #4a148c;
+    }
+
+    .btn-api:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    .api-status {
+      width: 100%;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #2e7d32;
+      display: none;
+      padding-top: 4px;
+    }
+
+    /* Filter Habitat */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 2px solid #81c784;
+      background: white;
+      color: #2e7d32;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active, .filter-chip:hover {
+      background: #2e7d32;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    /* Grid Kad Haiwan */
+    .animal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 24px;
+    }
+
+    .animal-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 4px solid #c8e6c9;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      position: relative;
+      transition: transform 0.25s, border-color 0.25s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .animal-card:hover {
+      transform: translateY(-6px);
+      border-color: #ffb300;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .diet-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .diet-Karnivor { background: #ffebee; color: #c62828; border: 2px solid #ef9a9a; }
+    .diet-Herbivor { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
+    .diet-Omnivor  { background: #fff8e1; color: #f57f17; border: 2px solid #ffe082; }
+
+    .habitat-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #546e7a;
+      background: #eceff1;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    /* Visual Haiwan: Gambar API Sebenar + Emoji Interaktif */
+    .visual-stage {
+      position: relative;
+      height: 170px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #e8f5e9, #e0f7fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid #e0e0e0;
+    }
+
+    .animal-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+
+    .visual-stage:hover .animal-photo {
+      transform: scale(1.08);
+    }
+
+    .emoji-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      font-size: 2.5rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .emoji-fallback {
+      font-size: 5rem;
+      filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.12));
+      transition: transform 0.2s;
+    }
+
+    .visual-stage.jump {
+      animation: happyJump 0.6s ease;
+    }
+
+    .animal-name {
+      font-size: 1.45rem;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .animal-sci {
+      text-align: center;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #78909c;
+      margin-bottom: 10px;
+    }
+
+    .sound-bubble {
+      background: #fff9c4;
+      border: 2px dashed #fbc02d;
+      border-radius: 16px;
+      padding: 8px 12px;
+      text-align: center;
+      font-weight: 800;
+      color: #f57f17;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .fact-box {
+      background: #f1f8e9;
+      border-radius: 16px;
+      padding: 12px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      color: #33691e;
+      margin-bottom: 14px;
+    }
+
+    .api-live-badge {
+      display: inline-block;
+      background: #e1f5fe;
+      color: #0277bd;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-action {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.12s;
+    }
+
+    .btn-speak {
+      background: #29b6f6;
+      color: white;
+      box-shadow: 0 4px 0 #0288d1;
+    }
+
+    .btn-feed {
+      background: #ff7043;
+      color: white;
+      box-shadow: 0 4px 0 #d84315;
+    }
+
+    .btn-action:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    /* Mod Kuiz */
+    .quiz-box {
+      background: white;
+      border-radius: 28px;
+      border: 4px solid #ffcc80;
+      box-shadow: var(--shadow);
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .quiz-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      font-weight: 800;
+      color: #ef6c00;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .quiz-emoji {
+      font-size: 4.8rem;
+      margin: 10px 0;
+    }
+
+    .quiz-question {
+      font-size: 1.35rem;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 550px) {
+      .quiz-options { grid-template-columns: 1fr; }
+    }
+
+    .quiz-opt-btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 16px;
+      border-radius: 18px;
+      border: 3px solid #b0bec5;
+      background: #fafafa;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #cfd8dc;
+      transition: all 0.15s;
+    }
+
+    .quiz-opt-btn:hover:not(:disabled) {
+      border-color: #29b6f6;
+      background: #e1f5fe;
+    }
+
+    .quiz-opt-btn.correct {
+      background: #c8e6c9;
+      border-color: #2e7d32;
+      color: #1b5e20;
+      box-shadow: 0 5px 0 #2e7d32;
+    }
+
+    .quiz-opt-btn.wrong {
+      background: #ffcdd2;
+      border-color: #c62828;
+      color: #b71c1c;
+      box-shadow: 0 5px 0 #c62828;
+    }
+
+    .quiz-feedback {
+      margin-top: 20px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      min-height: 32px;
+    }
+
+    /* Mod Padankan Makanan */
+    .feed-game-box {
+      background: white;
+      border-radius: 28px;
+      border: 4px solid #ce93d8;
+      box-shadow: var(--shadow);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .hungry-animal-stage {
+      background: linear-gradient(180deg, #f3e5f5, #ffffff);
+      border: 3px dashed #ab47bc;
+      border-radius: 24px;
+      padding: 24px;
+      margin: 20px auto;
+      max-width: 420px;
+    }
+
+    .hungry-emoji {
+      font-size: 5.5rem;
+      display: inline-block;
+      transition: transform 0.25s;
+    }
+
+    .food-choices {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .food-btn {
+      background: #fff8e1;
+      border: 3px solid #ffb300;
+      border-radius: 20px;
+      padding: 16px 24px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #ffa000;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 140px;
+    }
+
+    .food-btn:hover {
+      transform: scale(1.06);
+    }
+
+    .food-btn:active {
+      transform: translateY(4px);
+      box-shadow: none;
+    }
+
+    .food-emoji {
+      font-size: 3rem;
+    }
+
+    .food-label {
+      font-weight: 800;
+      color: #5d4037;
+    }
+
+    /* Animasi Zarah Hati/Makanan */
+    .floating-heart {
+      position: absolute;
+      font-size: 1.8rem;
+      pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+      z-index: 20;
+    }
+
+    @keyframes bounceSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes happyJump {
+      0%   { transform: scale(1) translateY(0); }
+      30%  { transform: scale(1.08) translateY(-12px) rotate(3deg); }
+      60%  { transform: scale(1.04) translateY(-6px) rotate(-3deg); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    @keyframes floatUp {
+      0%   { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-70px) scale(1.4); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-<header class="header" role="banner">
-  <h1>🦊 <span data-i18n="site_title">Wild Wonders</span></h1>
-  <nav>
-    <a href="#explore" data-i18n="nav_explore">Explore</a>
-    <a href="#quiz" data-i18n="nav_quiz">Quiz</a>
-    <a href="#help" data-i18n="nav_help">Help</a>
-    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
-    <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Toggle language">MS</button>
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- HEADER & GAMIFIKASI -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo">🐯</div>
+        <div class="brand-title">
+          <h1>Wild Wonders Malaysia</h1>
+          <p>Ensiklopedia Hidup & Kembara Sains Sekolah Rendah (KSSR)</p>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="badge-pill">
+          🐾 Koleksi: <span id="total-animals-count">16</span> Spesies
+        </div>
+        <div class="badge-pill" id="ranger-rank">
+          🎖️ Pangkat: <span>Pelawat Baru</span>
+        </div>
+        <div class="badge-pill star-pill" id="star-pill">
+          ⭐ <span id="star-count">0</span> Bintang
+        </div>
+        <button class="sound-btn" id="toggle-sound" title="Buka/Tutup Bunyi">🔊</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- TAB MOD INTERAKTIF -->
+  <nav class="mode-tabs">
+    <button class="tab-btn active" onclick="switchMode('explore', this)">
+      🌿 Teroka & Carian API
+    </button>
+    <button class="tab-btn" onclick="switchMode('quiz', this)">
+      🎯 Kuiz Pintar (<span id="quiz-pool-count">70+</span> Soalan)
+    </button>
+    <button class="tab-btn" onclick="switchMode('feed', this)">
+      🍎 Suap Makanan
+    </button>
   </nav>
-</header>
 
-<div class="hero">
-  <h2 data-i18n="hero_title">Discover wild wonders.</h2>
-  <p class="sub"><span class="fact-cycle" id="heroFact">Did you know? Octopuses have three hearts.</span></p>
-  <button class="btn-surprise" onclick="surpriseMe()" data-i18n="surprise_btn">🎲 Surprise Me!</button>
-</div>
-
-<section class="section" id="aotdContainer">
-  <div class="aotd-card">
-    <div class="emoji-big">🦊</div>
-    <div class="overlay"></div>
-    <img class="bg-img" src="" alt="" id="aotdBg" style="display:none">
-    <div class="info" id="aotdInfo">
-      <div class="tag" id="aotdTag" data-i18n="aotd_tag">Animal of the Day</div>
-      <h3 id="aotdName">Finding an animal...</h3>
-      <p id="aotdFact" class="skeleton" style="height:40px;"></p>
-      <div class="aotd-actions">
-        <button onclick="refreshAOTD()" data-i18n="aotd_btn">Next Animal →</button>
+  <main>
+    <!-- MOD 1: TEROKA HABITAT + INTEGRASI PUBLIC API -->
+    <section id="panel-explore" class="section-panel active">
+      
+      <!-- BAR ENJIN PUBLIC API (WIKIPEDIA REST API + iNATURALIST/WIKIMEDIA) -->
+      <div class="api-explorer-bar">
+        <div class="api-info">
+          <div class="api-info-icon">🌐</div>
+          <div>
+            <h3>Teroka Haiwan Dunia & Malaysia (Live Public API)</h3>
+            <p>Gambar & fakta sebenar ditarik secara langsung dari Wikipedia Bahasa Melayu API! Cuba cari apa-apa haiwan.</p>
+          </div>
+        </div>
+        <div class="api-controls">
+          <input type="text" id="api-search-input" class="api-input" placeholder="Taip nama haiwan (cth: Singa, Kuda, Paus)..." onkeydown="if(event.key==='Enter') searchAnimalFromAPI()" />
+          <button class="btn-api btn-api-search" onclick="searchAnimalFromAPI()">
+            🔍 Cari API
+          </button>
+          <button class="btn-api btn-api-random" onclick="summonRandomAPIAnimal()">
+            🎲 Panggil Haiwan Rawak!
+          </button>
+        </div>
+        <div class="api-status" id="api-status">⏳ Sedang menghubungi Public API...</div>
       </div>
-    </div>
-  </div>
-</section>
 
-<section class="section" id="explore">
-  <h2 class="section-title"><span data-i18n="cat_title">Pick a Category</span> 🐾</h2>
-  <div class="cat-grid" id="catGrid">
-    <div class="cat-card dogs" tabindex="0" role="button" data-cat="dogs" onclick="openCategory('dogs')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('dogs')" aria-label="Dogs">
-      <div class="emoji-placeholder" id="catPlh_dogs">🐕</div>
-      <div class="gradient"></div>
-      <div class="content"><span class="icon">🐕</span><span class="name" data-i18n="cat_dogs">Dogs</span></div>
-    </div>
-    <div class="cat-card cats" tabindex="0" role="button" data-cat="cats" onclick="openCategory('cats')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('cats')" aria-label="Cats">
-      <div class="emoji-placeholder" id="catPlh_cats">🐈</div>
-      <div class="gradient"></div>
-      <div class="content"><span class="icon">🐈</span><span class="name" data-i18n="cat_cats">Cats</span></div>
-    </div>
-    <div class="cat-card birds" tabindex="0" role="button" data-cat="birds" onclick="openCategory('birds')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('birds')" aria-label="Birds">
-      <div class="emoji-placeholder" id="catPlh_birds">🐦</div>
-      <div class="gradient"></div>
-      <div class="content"><span class="icon">🐦</span><span class="name" data-i18n="cat_birds">Birds</span></div>
-    </div>
-    <div class="cat-card fish" tabindex="0" role="button" data-cat="fish" onclick="openCategory('fish')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('fish')" aria-label="Fish">
-      <div class="emoji-placeholder" id="catPlh_fish">🐟</div>
-      <div class="gradient"></div>
-      <div class="content"><span class="icon">🐟</span><span class="name" data-i18n="cat_fish">Fish</span></div>
-    </div>
-    <div class="cat-card endangered" tabindex="0" role="button" data-cat="endangered" onclick="openCategory('endangered')" onkeydown="if(event.key==='Enter'||event.key===' ')event.preventDefault(),openCategory('endangered')" aria-label="Endangered animals">
-      <div class="emoji-placeholder" id="catPlh_endangered">🌿</div>
-      <div class="gradient"></div>
-      <div class="content"><span class="icon">🌿</span><span class="name" data-i18n="cat_endangered">Endangered</span></div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="quiz">
-  <h2 class="section-title"><span data-i18n="quiz_title">Test Yourself</span> 🧠</h2>
-  <div class="quiz-card">
-    <div class="q-score"><span id="qScoreCorrect">0</span>/<span id="qScoreTotal">10</span> ⭐</div>
-    <div class="q-streak" id="qStreak"></div>
-    <div class="q-progress"><div class="q-progress-fill" id="qProgress" style="width:0%"></div></div>
-    <div id="qActive">
-      <div class="q-number" id="qNumber">Question 1/10</div>
-      <div class="q-text" id="qText"></div>
-      <div class="q-options" id="qOptions"></div>
-    </div>
-    <div class="quiz-end" id="quizEnd">
-      <div class="big-score" id="finalScore">0/10</div>
-      <div class="badge" id="finalBadge">🏆 Animal Genius</div>
-      <p id="finalMsg">You really know your animals!</p>
-      <button onclick="resetQuiz()" data-i18n="quiz_again">Play Again</button>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="help">
-  <h2 class="section-title"><span data-i18n="end_title">Need Our Help</span> 🌍</h2>
-  <div class="end-scroll" id="endScroll"></div>
-</section>
-
-<footer class="footer">
-  <p data-i18n="footer">Built with ❤️ for curious kids &mdash; <span id="footerAttrib"></span></p>
-</footer>
-
-<div class="modal-overlay" id="modal"
-     role="dialog" aria-modal="true" aria-labelledby="modalTitle"
-     onclick="if(event.target===this)closeModal()"
-     onkeydown="if(event.key==='Escape')closeModal()">
-  <div class="modal" style="position:relative">
-    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
-    <div class="modal-img-wrap noimg" id="modalImgWrap">
-      <img class="modal-img" id="modalImg" src="" alt="">
-      <div class="placeholder">🦊</div>
-    </div>
-    <div class="modal-body" id="modalBody">
-      <h2 id="modalTitle"></h2>
-      <div class="sub" id="modalSub"></div>
-      <div id="modalFacts"></div>
-      <div class="wiki-attrib" id="wikiAttrib" style="display:none">
-        <a id="wikiLink" href="#" target="_blank" rel="noopener">From Wikipedia, CC BY-SA</a>
+      <!-- FILTER KATEGORI -->
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterAnimals('Semua', this)">🌍 Semua Haiwan</button>
+        <button class="filter-chip" onclick="filterAnimals('Hutan Hujan', this)">🌳 Hutan Hujan</button>
+        <button class="filter-chip" onclick="filterAnimals('Sungai & Laut', this)">🌊 Sungai & Laut</button>
+        <button class="filter-chip" onclick="filterAnimals('Udara & Kanopi', this)">🦅 Udara & Kanopi</button>
+        <button class="filter-chip" onclick="filterAnimals('Karnivor', this)">🥩 Karnivor</button>
+        <button class="filter-chip" onclick="filterAnimals('Herbivor', this)">🌿 Herbivor</button>
+        <button class="filter-chip" onclick="filterAnimals('Omnivor', this)">🍌 Omnivor</button>
       </div>
-      <div id="modalAudio" class="audio-player" style="display:none">
-        <button id="audioPlayBtn" aria-label="Play bird sound">▶</button>
-        <div><div class="label" id="audioLabel">Bird Song</div></div>
+
+      <div class="animal-grid" id="animal-grid"></div>
+    </section>
+
+    <!-- MOD 2: KUIZ CILIK (RAWak & ANTI-BERULANG) -->
+    <section id="panel-quiz" class="section-panel">
+      <div class="quiz-box">
+        <div class="quiz-progress">
+          <span id="quiz-qnum">Soalan 1 / 6</span>
+          <span id="quiz-streak">🔥 Kombo: 0</span>
+        </div>
+        <div class="quiz-emoji" id="quiz-emoji">🐯</div>
+        <h2 class="quiz-question" id="quiz-question">Memuatkan soalan...</h2>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
       </div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<script>
-// ─── i18n ───
-const i18n = {
-  en: {
-    site_title:'Wild Wonders',hero_title:'Discover wild wonders.',surprise_btn:'🎲 Surprise Me!',
-    aotd_tag:'Animal of the Day',aotd_btn:'Next Animal →',
-    cat_title:'Pick a Category',cat_dogs:'Dogs',cat_cats:'Cats',cat_birds:'Birds',cat_fish:'Fish',cat_endangered:'Endangered',
-    nav_explore:'Explore',nav_quiz:'Quiz',nav_help:'Help',
-    quiz_title:'Test Yourself',quiz_again:'Play Again',
-    end_title:'Need Our Help',footer:'Built with ❤️ for curious kids'
-  }
-};
-let currentLang = 'en';
+    <!-- MOD 3: SUAP MAKANAN (HERBIVOR / KARNIVOR / OMNIVOR) -->
+    <section id="panel-feed" class="section-panel">
+      <div class="feed-game-box">
+        <h2 style="color: #6a1b9a; margin-bottom: 6px;">🍽️ Cabaran Diet Haiwan!</h2>
+        <p style="font-weight: 700; color: #546e7a;">
+          Pilih makanan yang betul mengikut tabiat pemakanan haiwan ini!
+        </p>
 
-function toggleLang(){
-  document.getElementById('langToggle').textContent = currentLang === 'en' ? 'EN' : 'MS';
-  currentLang = currentLang === 'en' ? 'ms' : 'en';
-  document.documentElement.lang = currentLang === 'en' ? 'en' : 'ms';
-  applyLang();
-}
-function applyLang(){
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    if (i18n[currentLang] && i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
-  });
-}
+        <div class="hungry-animal-stage" id="hungry-stage">
+          <div class="hungry-emoji" id="hungry-emoji">🐼</div>
+          <h3 id="hungry-name" style="font-size: 1.5rem; color: #4a148c; margin-top: 8px;">Tapir Malaya</h3>
+          <p id="hungry-hint" style="font-weight: 800; color: #8e24aa; margin-top: 4px;">
+            "Saya lapar! Apakah makanan kegemaran saya?"
+          </p>
+        </div>
 
-// ─── Dark Mode ───
-function toggleTheme(){
-  document.body.classList.toggle('dark-mode');
-  const btn = document.getElementById('themeToggle');
-  btn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-  localStorage.setItem('ww-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-}
-if (localStorage.getItem('ww-theme') === 'dark') document.body.classList.add('dark-mode');
+        <div class="food-choices">
+          <button class="food-btn" onclick="checkFoodChoice('Herbivor')">
+            <span class="food-emoji">🌿🍌</span>
+            <span class="food-label">Pucuk Daun & Buah</span>
+            <small style="color:#2e7d32; font-weight:800;">(Herbivor)</small>
+          </button>
+          <button class="food-btn" onclick="checkFoodChoice('Karnivor')">
+            <span class="food-emoji">🥩🐟</span>
+            <span class="food-label">Daging & Ikan</span>
+            <small style="color:#c62828; font-weight:800;">(Karnivor)</small>
+          </button>
+          <button class="food-btn" onclick="checkFoodChoice('Omnivor')">
+            <span class="food-emoji">🍒🐛</span>
+            <span class="food-label">Buah & Serangga</span>
+            <small style="color:#f57f17; font-weight:800;">(Omnivor)</small>
+          </button>
+        </div>
 
-// ─── Facts Pool ───
-const facts = {
-  dogs: [
-    'A dog\'s nose print is as unique as your fingerprint.',
-    'Dogs can understand up to 250 words and gestures.',
-    'A Greyhound could outrun a cheetah in a long-distance race.',
-    'Dogs have three eyelids — one just to keep their eyes wet.',
-    'When dogs kick after pooping, they\'re leaving a scent message.',
-    'Puppies are born blind and deaf — they find mom by touch.',
-    'Dogs dream just like humans do.',
-    'The Labrador Retriever has been America\'s favorite dog for 30+ years.',
-    'Dogs can detect diseases like cancer by scent.',
-    'The oldest known dog lived to be 29 years old.',
-    'Dogs have about 1,700 taste buds (humans have 9,000).',
-    'A dog wags its tail to the right when happy, left when nervous.',
-    'The Basenji dog doesn\'t bark — it yodels.',
-    'A dog\'s whiskers help them sense things in the dark.'
-  ],
-  cats: [
-    'Cats sleep about 70% of their lives — that\'s 16 hours a day.',
-    'A cat\'s purr vibrates at a frequency that can heal bones.',
-    'Cats can\'t taste sweet things at all.',
-    'A cat that\'s falling always lands on its feet — it\'s called the "righting reflex."',
-    'Cats have 32 muscles in each ear, so they can rotate them 180°.',
-    'Ancient Egyptians thought cats were magical — hurting one was a crime.',
-    'A cat has 244 bones in its body (humans have 206).',
-    'The world\'s richest cat had a fortune of £7 million.',
-    'Cats can drink seawater — their kidneys can filter out the salt.',
-    'A cat\'s brain is 90% similar to a human\'s brain.',
-    'Cats sweat through their paw pads.',
-    'Cats can make over 100 different sounds.',
-    'A group of cats is called a clowder.',
-    'Cats walk like camels and giraffes — both right feet then both left.',
-    'House cats share 95.6% of their DNA with tigers.'
-  ],
-  birds: [
-    'Some birds can mimic human speech — parrots are the champs.',
-    'Birds have hollow bones that make them light enough to fly.',
-    'The bee hummingbird is so small it could sit on your thumb.',
-    'Owls can turn their heads 270°, but they can\'t move their eyeballs.',
-    'Penguins propose to their mates with a pebble.',
-    'A group of flamingos is called a "flamboyance."',
-    'The fastest bird is the peregrine falcon — it dives at 389 km/h.',
-    'Crows can remember human faces for years.',
-    'Birds have a special organ called a "syrinx" to sing complex songs.',
-    'A parrot can live up to 80 years — longer than most dogs.',
-    'The Arctic tern flies from pole to pole every year — that\'s 70,000 km.',
-    'Owls have silent flight — their special feathers muffle the sound.',
-    'Birds see colors that humans can\'t see — they see ultraviolet!',
-    'The kiwi bird has nostrils at the tip of its beak.',
-    'Pigeons can recognize themselves in a mirror.',
-    'The wandering albatross has the largest wingspan of any bird — 3.5 meters.'
-  ],
-  fish: [
-    'Fish have been swimming on Earth for over 500 million years.',
-    'A group of fish is called a school — but they\'re not learning!',
-    'Clownfish can change sex — all are born male.',
-    'The whale shark is the biggest fish in the ocean — as big as a bus.',
-    'Fish use their swim bladder to float up and down without paddling.',
-    'A parrotfish produces sand when it poops — yes, it poops beaches.',
-    'Goldfish can remember things for months, not just 3 seconds.',
-    'The mudskipper is a fish that can walk on land.',
-    'Some fish can change color to blend in — like chameleons.',
-    'The fastest fish is the sailfish — it swims at 110 km/h.',
-    'Fish have been in space! They went to the moon on Apollo missions.',
-    'A pufferfish expands to look bigger — it\'s the fish version of a balloon.',
-    'The archerfish can shoot water at bugs to knock them into the water.',
-    'Fish scales have growth rings like tree trunks — you can count their age.',
-    'Catfish have over 100,000 taste buds all over their body.',
-    'Seahorses are the only fish that swim upright.'
-  ],
-  endangered: [
-    'Elephants are losing their habitats because of farming and development.',
-    'Sea turtles often mistake plastic bags for jellyfish — and get sick.',
-    'Orangutans share 97% of their DNA with humans.',
-    'There are fewer than 4,000 tigers left in the wild.',
-    'Rhinos are poached for their horns — which are made of keratin, same as our fingernails.',
-    'Polar bears depend on sea ice to hunt — and the ice is melting.',
-    'The vaquita porpoise has fewer than 10 individuals left.',
-    'Palm oil plantations destroy orangutan habitats every single day.',
-    'The koala could be functionally extinct by 2050.',
-    'Deforestation is the biggest threat to 80% of endangered species.',
-    'There are only about 1,800 giant pandas left in the wild.',
-    'Climate change is the biggest threat to polar bears\' survival.',
-    'Many sea turtles die because they eat plastic floating in the ocean.',
-    'Sumatran elephants could be gone in 30 years at the current rate.',
-    'The African forest elephant helps plant trees by spreading seeds.',
-    'Rhinos have been around for 50 million years — but might not survive this century.',
-    'Even small actions like turning off lights help protect endangered species.'
-  ]
-};
-const heroFacts = [
-  'Octopuses have three hearts.',
-  'A kangaroo can\'t walk backwards.',
-  'Cows have best friends.',
-  'Butterflies taste with their feet.',
-  'An ostrich\'s eye is bigger than its brain.',
-  'A sloth takes two weeks to digest its food.',
-  'Crows can remember human faces for years.',
-  'Sea otters hold hands when they sleep.'
-];
+        <div class="quiz-feedback" id="feed-feedback"></div>
+      </div>
+    </section>
+  </main>
 
-// ─── Wikipedia API ───
-const wikiQueries = {
-  dogs: ['dog breed','dog breeds list','popular dog','dog'],
-  cats: ['cat breed','cat breeds list','domestic cat','cat'],
-  birds: ['bird species','bird','passerine','bird list'],
-  fish: ['fish species','fish','freshwater fish','marine fish'],
-  endangered: ['endangered species','endangered animal','critically endangered species','vulnerable species']
-};
-
-async function findAnimalPage(category) {
-  try {
-    const queries = wikiQueries[category] || ['animal'];
-    const q = queries[Math.floor(Math.random() * queries.length)];
-    const r = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*&srlimit=50`);
-    const d = await r.json();
-    const pages = d.query.search.map(s => s.title);
-    return pages[Math.floor(Math.random() * pages.length)];
-  } catch { return null; }
-}
-
-async function getWikiPage(title) {
-  try {
-    const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g,'_'))}`);
-    if (!r.ok) return null;
-    return await r.json();
-  } catch { return null; }
-}
-
-function stripHtml(s) { return s.replace(/<[^>]*>/g, ''); }
-
-// ponytail: synthetic chirp when real bird recording unavailable. Web Audio, no files needed.
-function chirp() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === 'suspended') ctx.resume();
-    [0,0.15,0.3].forEach(d => {
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(2500, ctx.currentTime + d);
-      osc.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + d + 0.08);
-      osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + d + 0.2);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime + d);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d + 0.25);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + d); osc.stop(ctx.currentTime + d + 0.25);
-    });
-  } catch {}
-}
-
-const endangeredSpecies = [
-  { name:'Sumatran Elephant', emoji:'🐘', status:'Critical', statusClass:'critical', fact:'Only about 2,400 remain in the wild. Palm oil plantations are taking their home.', popPct:1 },
-  { name:'Sea Turtle', emoji:'🐢', status:'Vulnerable', statusClass:'vulnerable', fact:'They\'ve been around since dinosaurs — but plastic pollution is their biggest enemy.', popPct:10 },
-  { name:'Orangutan', emoji:'🦧', status:'Critical', statusClass:'critical', fact:'They share 97% of our DNA. Deforestation is pushing them to extinction.', popPct:3 },
-  { name:'Amur Leopard', emoji:'🐆', status:'Critical', statusClass:'critical', fact:'Fewer than 100 left in the wild. The rarest cat on Earth.', popPct:1 },
-  { name:'Vaquita', emoji:'🐬', status:'Critical', statusClass:'critical', fact:'The world\'s most endangered marine mammal — fewer than 10 remain.', popPct:1 },
-  { name:'Giant Panda', emoji:'🐼', status:'Vulnerable', statusClass:'vulnerable', fact:'Conservation efforts have helped — about 1,800 remain in the wild.', popPct:2 },
-  { name:'Cross River Gorilla', emoji:'🦍', status:'Critical', statusClass:'critical', fact:'Fewer than 300 remain. The rarest great ape on Earth.', popPct:1 }
-];
-
-// ─── Quiz ───
-const quiz = [
-  { q:'🐱 What sound does a cat make?', opts:['Meow','Bark','Roar','Chirp'], ans:0 },
-  { q:'🐕 Dogs are mammals. Is that...', opts:['True','False'], ans:0 },
-  { q:'🐻‍❄️ A polar bear\'s skin is actually...', opts:['White','Black','Pink','Brown'], ans:1 },
-  { q:'🕷️ How many legs does a spider have?', opts:['6','8','10','12'], ans:1 },
-  { q:'🐟 Fish sleep with their eyes open.', opts:['True','False'], ans:0 },
-  { q:'🏃 What is the fastest land animal?', opts:['Lion','Cheetah','Horse','Rabbit'], ans:1 },
-  { q:'🐧 Penguins can fly.', opts:['True','False'], ans:1 },
-  { q:'🐝 What do bees collect from flowers?', opts:['Leaves','Seeds','Nectar','Water'], ans:2 },
-  { q:'🐬 A dolphin is a type of fish.', opts:['True','False'], ans:1 },
-  { q:'🐼 What do giant pandas eat mostly?', opts:['Fruit','Leaves','Bamboo','Insects'], ans:2 },
-  { q:'🦁 Which big cat lives in a pride?', opts:['Tiger','Lion','Leopard','Cheetah'], ans:1 },
-  { q:'🦉 Owls can turn their heads 360 degrees.', opts:['True','False'], ans:1 },
-  { q:'🐘 What is an elephant\'s nose called?', opts:['Snout','Trunk','Tusk','Horn'], ans:1 },
-  { q:'🦈 A shark\'s skeleton is made of...', opts:['Bone','Cartilage','Teeth','Rock'], ans:1 },
-  { q:'🦎 Chameleons change color to match their mood.', opts:['True','False'], ans:0 },
-  { q:'🦒 What is a baby giraffe called?', opts:['Cub','Calf','Foal','Kid'], ans:1 },
-  { q:'🐸 Frogs drink water through their skin.', opts:['True','False'], ans:0 },
-  { q:'🦋 Butterflies taste with their...', opts:['Tongue','Feet','Antennae','Wings'], ans:1 },
-  { q:'🐊 Crocodiles can stick out their tongue.', opts:['True','False'], ans:1 },
-  { q:'🦩 Why are flamingos pink?', opts:['From paint','From their food','Born that way','From water'], ans:1 },
-  { q:'🐒 Which animal has the longest lifespan?', opts:['Elephant','Tortoise','Parrot','Whale'], ans:1 },
-  { q:'🦔 A group of porcupines is called a...', opts:['Herd','Prickle','Group','Crowd'], ans:1 },
-  { q:'🦛 Hippos can run faster than humans.', opts:['True','False'], ans:0 },
-  { q:'🐓 What bird lays the largest egg?', opts:['Eagle','Ostrich','Penguin','Toucan'], ans:1 },
-  { q:'🐙 How many hearts does an octopus have?', opts:['1','2','3','4'], ans:2 }
-];
-const QUIZ_PER_GAME = 10;
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-let quizSubset = shuffle([...quiz]).slice(0, QUIZ_PER_GAME);
-let qIdx = 0, qScore = 0, qDone = false, qStreak = 0;
-
-function renderQuiz(){
-  if (qIdx >= quizSubset.length) { finishQuiz(); return; }
-  const q = quizSubset[qIdx];
-  document.getElementById('qNumber').textContent = `Question ${qIdx+1}/${quizSubset.length}`;
-  document.getElementById('qText').textContent = q.q;
-  document.getElementById('qProgress').style.width = `${(qIdx/quizSubset.length)*100}%`;
-  const opts = document.getElementById('qOptions');
-  opts.innerHTML = '';
-  q.opts.forEach((opt,i) => {
-    const btn = document.createElement('button');
-    btn.className = 'q-opt'; btn.textContent = opt;
-    btn.onclick = () => checkAnswer(i);
-    opts.appendChild(btn);
-  });
-  document.getElementById('qActive').style.display = 'block';
-  document.getElementById('quizEnd').classList.remove('show');
-}
-
-function checkAnswer(idx){
-  if (qDone) return;
-  const q = quizSubset[qIdx];
-  const opts = document.querySelectorAll('.q-opt');
-  opts.forEach((el,i) => {
-    el.classList.add('disabled');
-    if (i === q.ans) el.classList.add('correct');
-    else if (i === idx && idx !== q.ans) el.classList.add('wrong');
-  });
-  if (idx === q.ans) {
-    qScore++; qStreak++;
-    document.getElementById('qScoreCorrect').textContent = qScore;
-    document.getElementById('qStreak').textContent = qStreak >= 2 ? '🔥 ' + qStreak + ' streak!' : '';
-    confettiBurst();
-  } else {
-    qStreak = 0;
-    document.getElementById('qStreak').textContent = '';
-  }
-  qDone = true;
-  setTimeout(() => { qIdx++; qDone = false; renderQuiz(); }, 1200);
-}
-
-function finishQuiz(){
-  document.getElementById('qActive').style.display = 'none';
-  document.getElementById('qProgress').style.width = '100%';
-  document.getElementById('finalScore').textContent = `${qScore}/${quizSubset.length}`;
-  let badge, msg;
-  if (qScore === quizSubset.length) { badge = '🏆 Animal Genius'; msg = 'You really know your animals!'; }
-  else if (qScore >= 7) { badge = '🦊 Wildlife Expert'; msg = 'Almost perfect! You\'re a nature pro.'; }
-  else if (qScore >= 4) { badge = '🐾 Nature Explorer'; msg = 'Good job! Keep learning about animals.'; }
-  else { badge = '🐣 Curious Cub'; msg = 'You\'re just getting started — try again!'; }
-  document.getElementById('finalBadge').textContent = badge;
-  document.getElementById('finalMsg').textContent = msg;
-  document.getElementById('quizEnd').classList.add('show');
-  confettiBurst();
-}
-
-function resetQuiz(){
-  quizSubset = shuffle([...quiz]).slice(0, QUIZ_PER_GAME);
-  qIdx = 0; qScore = 0; qDone = false; qStreak = 0;
-  document.getElementById('qScoreCorrect').textContent = '0';
-  document.getElementById('qStreak').textContent = '';
-  renderQuiz();
-}
-
-function confettiBurst(){
-  const emojis = ['🌟','⭐','🎉','🎊','✨','🦋','🌈'];
-  for (let i = 0; i < 30; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    el.style.left = Math.random()*100+'vw';
-    el.style.animationDuration = (Math.random()*1.5+1)+'s';
-    el.style.fontSize = (Math.random()*16+18)+'px';
-    el.setAttribute('aria-hidden','true');
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
-  }
-}
-
-// ─── API Wrapper ───
-async function apiGet(url) {
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw new Error(r.status);
-    return await r.json();
-  } catch { return null; }
-}
-
-// ponytail: sessionStorage cache for category card images. Cleared on page close, no stale-data bugs.
-function getCachedImg(category) {
-  try { return sessionStorage.getItem('ww_cat_img_' + category) } catch { return null }
-}
-function setCachedImg(category, url) {
-  try { sessionStorage.setItem('ww_cat_img_' + category, url) } catch {}
-}
-
-async function loadCatImages(){
-  for (const cat of ['dogs','cats','birds','fish','endangered']) {
-    const plh = document.getElementById('catPlh_'+cat);
-    if (!plh) continue;
-    const cached = getCachedImg(cat);
-    if (cached) { setCatBg(cat, cached); continue; }
-    const page = await findAnimalPage(cat);
-    if (!page) continue;
-    const data = await getWikiPage(page);
-    if (data?.thumbnail?.source) {
-      setCachedImg(cat, data.thumbnail.source);
-      setCatBg(cat, data.thumbnail.source);
-    }
-  }
-}
-function setCatBg(cat, src){
-  const card = document.querySelector(`.cat-card[data-cat="${cat}"]`);
-  if (!card) return;
-  const plh = document.getElementById('catPlh_'+cat);
-  if (!plh) return;
-  const img = document.createElement('img');
-  img.className = 'bg-img'; img.src = src; img.alt = '';
-  img.loading = 'lazy';
-  img.onload = () => { plh.style.display = 'none'; plh.parentNode.insertBefore(img, plh.nextSibling); };
-  img.onerror = () => {};
-}
-
-// ─── AOTD ───
-async function refreshAOTD(){
-  const types = ['dogs','cats','birds','fish','endangered'];
-  const type = types[Math.floor(Math.random()*types.length)];
-  const names = { dogs:'Random Dog', cats:'Random Cat', birds:'Random Bird', fish:'Random Fish', endangered:'Endangered' };
-  const emojis = { dogs:'🐕', cats:'🐈', birds:'🐦', fish:'🐟', endangered:'🌍' };
-  const tagNames = { dogs:'Dogs', cats:'Cats', birds:'Birds', fish:'Fish', endangered:'Endangered' };
-
-  const tag = document.getElementById('aotdTag');
-  const nameEl = document.getElementById('aotdName');
-  const factEl = document.getElementById('aotdFact');
-  const bg = document.getElementById('aotdBg');
-
-  tag.textContent = i18n[currentLang].aotd_tag || 'Animal of the Day';
-  nameEl.textContent = (i18n[currentLang].load_find || 'Finding an animal...');
-  factEl.className = 'skeleton'; factEl.style.height = '40px';
-  bg.style.display = 'none';
-  const card = tag.closest('.aotd-card');
-  if (card) { const em = card.querySelector('.emoji-big'); if (em) em.textContent = emojis[type]; }
-
-  let imgUrl = '', name = names[type], fact = facts[type][Math.floor(Math.random()*facts[type].length)];
-  let wikiUrl = '';
-
-  if (type === 'dogs') {
-    const d = await apiGet('https://dog.ceo/api/breeds/image/random');
-    if (d) imgUrl = d.message;
-  }
-  if (!imgUrl) {
-    const page = await findAnimalPage(type);
-    if (page) {
-      const wikiData = await getWikiPage(page);
-      if (wikiData) {
-        imgUrl = wikiData.thumbnail?.source || null;
-        if (wikiData.displaytitle) name = stripHtml(wikiData.displaytitle).replace(/\(.*?\)/g,'').trim();
-        const ext = stripHtml(wikiData.extract || '').split('.').slice(0,2).join('.');
-        if (ext) fact = ext + '.';
-        wikiUrl = wikiData.content_urls?.desktop?.page || '';
+  <script>
+    // =========================================================================
+    // 1. PANGKALAN DATA 16 HAIWAN UTAMA + INTEGRASI PUBLIC API (WIKIPEDIA MS)
+    // =========================================================================
+    const animals = [
+      {
+        id: 'harimau',
+        name: 'Harimau Malaya',
+        wikiTitle: 'Harimau_Malaya',
+        sci: 'Panthera tigris jacksoni',
+        emoji: '🐯',
+        habitat: 'Hutan Hujan',
+        diet: 'Karnivor',
+        soundText: 'AUMMM! Raja Rimba Malaysia!',
+        favFood: '🥩 Daging Rusa & Babi Hutan',
+        fact: 'Harimau Malaya ialah lambang keberanian pada Jata Negara Malaysia. Jalur hitam pada badannya unik seperti cap jari manusia!'
+      },
+      {
+        id: 'orangutan',
+        name: 'Orang Utan Borneo',
+        wikiTitle: 'Orang_utan',
+        sci: 'Pongo pygmaeus',
+        emoji: '🦧',
+        habitat: 'Hutan Hujan',
+        diet: 'Omnivor',
+        soundText: 'UU-AA-UU! Jom bergayut di dahan!',
+        favFood: '🍌 Buah Durian, Ara & Serangga',
+        fact: 'Orang Utan sangat bijak! Mereka membina sarang baharu daripada ranting dan daun di atas pokok setiap malam untuk tidur.'
+      },
+      {
+        id: 'tapir',
+        name: 'Tapir Malaya',
+        wikiTitle: 'Tapir_Malaya',
+        sci: 'Tapirus indicus',
+        emoji: '🐼',
+        habitat: 'Hutan Hujan',
+        diet: 'Herbivor',
+        soundText: 'CIIT-CIIT! Bunyi macam wisel!',
+        favFood: '🌿 Pucuk Daun Muda & Buah Hutan',
+        fact: 'Walaupun badannya hitam putih macam panda, Tapir sebenarnya bersaudara rapat dengan kuda dan badak sumbu!'
+      },
+      {
+        id: 'enggang',
+        name: 'Burung Enggang Badak',
+        wikiTitle: 'Enggang_Badak',
+        sci: 'Buceros rhinoceros',
+        emoji: '🦜',
+        habitat: 'Udara & Kanopi',
+        diet: 'Omnivor',
+        soundText: 'KAK-KAK! Terbang megah di angkasa!',
+        favFood: '🍒 Buah Ara, Cicak & Serangga',
+        fact: 'Burung kebanggaan Bumi Kenyalang (Sarawak)! Paruhnya yang melengkung ke atas dipanggil "balung" dan menguatkan suaranya.'
+      },
+      {
+        id: 'penyu',
+        name: 'Penyu Agar',
+        wikiTitle: 'Penyu_agar',
+        sci: 'Chelonia mydas',
+        emoji: '🐢',
+        habitat: 'Sungai & Laut',
+        diet: 'Herbivor',
+        soundText: 'SPLASH! Berenang merentas lautan!',
+        favFood: '🌱 Rumpai Laut & Alga',
+        fact: 'Penyu boleh mengembara ribuan kilometer di lautan luas, tetapi akan kembali semula ke pantai asal tempat ia menetas untuk bertelur!'
+      },
+      {
+        id: 'gajah',
+        name: 'Gajah Pygmy Borneo',
+        wikiTitle: 'Gajah_Borneo',
+        sci: 'Elephas maximus borneensis',
+        emoji: '🐘',
+        habitat: 'Hutan Hujan',
+        diet: 'Herbivor',
+        soundText: 'PRUUUT! Belalai panjang yang kuat!',
+        favFood: '🎋 Tebu, Pisang & Rumput',
+        fact: 'Gajah Pygmy di Sabah ialah gajah terkecil dan paling jinak di Asia. Telinganya besar dan ekornya panjang hampir mencecah tanah!'
+      },
+      {
+        id: 'beruang',
+        name: 'Beruang Madu',
+        wikiTitle: 'Beruang_madu',
+        sci: 'Helarctos malayanus',
+        emoji: '🐻',
+        habitat: 'Hutan Hujan',
+        diet: 'Omnivor',
+        soundText: 'GRRR-NYUM! Manisnya madu lebah!',
+        favFood: '🍯 Madu Lebah, Anai-anai & Buah',
+        fact: 'Beruang terkecil di dunia! Ia mempunyai tanda kuning berbentuk matahari terbit di dadanya dan lidah yang sangat panjang untuk menyedut madu.'
+      },
+      {
+        id: 'bekantan',
+        name: 'Monyet Belanda (Proboscis)',
+        wikiTitle: 'Monyet_Belanda',
+        sci: 'Nasalis larvatus',
+        emoji: '🐒',
+        habitat: 'Hutan Hujan',
+        diet: 'Herbivor',
+        soundText: 'HONK-HONK! Hidung besar unik!',
+        favFood: '🍃 Pucuk Bakau & Biji Buah',
+        fact: 'Hanya ditemui di pulau Borneo! Ia sangat pandai berenang di sungai kerana mempunyai kaki berselaput seperti kaki itik.'
+      },
+      {
+        id: 'kancil',
+        name: 'Pelanduk / Sang Kancil',
+        wikiTitle: 'Kancil',
+        sci: 'Tragulus kanchil',
+        emoji: '🦌',
+        habitat: 'Hutan Hujan',
+        diet: 'Herbivor',
+        soundText: 'TAP-TAP! Kecil tetapi pintar!',
+        favFood: '🍄 Cendawan, Buah Gugur & Daun',
+        fact: 'Mamalia berkuku paling kecil di dunia! Dalam cerita rakyat Melayu, Sang Kancil terkenal dengan kebijaksanaannya menyelesaikan masalah.'
+      },
+      {
+        id: 'buaya',
+        name: 'Buaya Tembaga',
+        wikiTitle: 'Buaya_tembaga',
+        sci: 'Crocodylus porosus',
+        emoji: '🐊',
+        habitat: 'Sungai & Laut',
+        diet: 'Karnivor',
+        soundText: 'SNAP! Mengintai di permukaan air!',
+        favFood: '🐟 Ikan Besar, Ketam & Burung Air',
+        fact: 'Reptilia terbesar di dunia yang hidup di muara sungai Malaysia. Ia boleh menahan nafas di dalam air selama lebih daripada satu jam!'
+      },
+      {
+        id: 'dugong',
+        name: 'Dugong',
+        wikiTitle: 'Dugong',
+        sci: 'Dugong dugon',
+        emoji: '🦭',
+        habitat: 'Sungai & Laut',
+        diet: 'Herbivor',
+        soundText: 'BLUB-BLUB! Lembu laut yang sopan!',
+        favFood: '🌾 Rumput Laut Dasar Pantai',
+        fact: 'Digelar "Lembu Laut" kerana ia meragut rumput laut di perairan Johor dan Sabah. Dugong ialah mamalia laut yang melahirkan anak!'
+      },
+      {
+        id: 'seladang',
+        name: 'Seladang Malaya',
+        wikiTitle: 'Seladang',
+        sci: 'Bos gaurus',
+        emoji: '🦬',
+        habitat: 'Hutan Hujan',
+        diet: 'Herbivor',
+        soundText: 'MOOO-DENGUS! Tegap dan sasa!',
+        favFood: '🌿 Rumput Muda, Buluh & Pucuk Kayu',
+        fact: 'Spesies lembu liar terbesar di dunia! Kaki bawahnya berwarna putih bersih seolah-olah sedang memakai stoking sekolah.'
+      },
+      {
+        id: 'tenggiling',
+        name: 'Tenggiling Sunda',
+        wikiTitle: 'Tenggiling_Sunda',
+        sci: 'Manis javanica',
+        emoji: '🦔',
+        habitat: 'Hutan Hujan',
+        diet: 'Karnivor',
+        soundText: 'GULUNG! Perisai sisik keras!',
+        favFood: '🐜 Semut & Anai-anai',
+        fact: 'Apabila terancam, Tenggiling akan menggulungkan badannya menjadi bola keras yang tidak mampu digigit oleh harimau!'
+      },
+      {
+        id: 'helang',
+        name: 'Helang Merah (Langkawi)',
+        wikiTitle: 'Helang_Merah',
+        sci: 'Haliastur indus',
+        emoji: '🦅',
+        habitat: 'Udara & Kanopi',
+        diet: 'Karnivor',
+        soundText: 'KIII-AAK! Mata tajam dari langit!',
+        favFood: '🦀 Ikan & Ketam Permukaan Laut',
+        fact: 'Bulu badannya berwarna coklat kemerahan dan kepalanya putih. Ia menjadi simbol utama pulau pelancongan Langkawi di Kedah!'
+      },
+      {
+        id: 'kubung',
+        name: 'Kubung Sunda (Lemur Terbang)',
+        wikiTitle: 'Kubung_Sunda',
+        sci: 'Galeopterus variegatus',
+        emoji: '🦇',
+        habitat: 'Udara & Kanopi',
+        diet: 'Herbivor',
+        soundText: 'SWOOSH! Meluncur dari pokok ke pokok!',
+        favFood: '🌸 Bunga, Nektar & Daun Muda',
+        fact: 'Kubung tidak terbang seperti burung, tetapi meluncur sejauh 100 meter di udara menggunakan selaput kulit di antara kakinya!'
+      },
+      {
+        id: 'jerung',
+        name: 'Yu Paus (Whale Shark)',
+        wikiTitle: 'Yu_paus',
+        sci: 'Rhincodon typus',
+        emoji: '🦈',
+        habitat: 'Sungai & Laut',
+        diet: 'Karnivor',
+        soundText: 'WHOOSH! Gergasi laut yang jinak!',
+        favFood: '🦐 Plankton, Udang Kecil & Anak Ikan',
+        fact: 'Ikan paling besar di dunia yang kadangkala muncul di perairan Pulau Sipadan dan Terengganu! Walaupun besar, ia sangat jinak.'
       }
-    }
-  }
+    ];
 
-  if (!imgUrl) {
-    const s = endangeredSpecies[Math.floor(Math.random()*endangeredSpecies.length)];
-    nameEl.textContent = s.emoji + ' ' + s.name;
-    factEl.className = ''; factEl.textContent = s.fact;
-    return;
-  }
-  nameEl.textContent = name;
-  factEl.className = ''; factEl.textContent = fact;
-  bg.src = imgUrl; bg.alt = name; bg.style.display = 'block';
-}
+    // Senarai cadangan haiwan tambahan untuk butang "Panggil Haiwan Rawak" dari Public API
+    const randomAPIPool = [
+      { query: 'Singa', emoji: '🦁', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🥩 Daging Zebra & Rusa' },
+      { query: 'Zirafah', emoji: '🦒', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌿 Daun Pokok Akasia Tinggi' },
+      { query: 'Kuda_belang', emoji: '🦓', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌾 Rumput Segar Savana' },
+      { query: 'Ikan_lumba-lumba', emoji: '🐬', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🐟 Ikan Kecil & Sotong' },
+      { query: 'Paus_biru', emoji: '🐋', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🦐 Kril & Plankton Laut' },
+      { query: 'Penguin', emoji: '🐧', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🐟 Ikan Laut Sejuk' },
+      { query: 'Kanggaru', emoji: '🦘', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌱 Rumput & Pucuk Tumbuhan' },
+      { query: 'Koala', emoji: '🐨', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🍃 Daun Kayu Putih (Eucalyptus)' },
+      { query: 'Burung_hantu', emoji: '🦉', diet: 'Karnivor', habitat: 'Udara & Kanopi', favFood: '🐁 Tikus & Serangga Malam' },
+      { query: 'Kucing', emoji: '🐱', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🐟 Ikan Segar & Daging' },
+      { query: 'Arnab', emoji: '🐰', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🥕 Lobak Merah & Sayur Hijau' },
+      { query: 'Katak', emoji: '🐸', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🪰 Lalat, Nyamuk & Serangga' },
+      { query: 'Lebah_madu', emoji: '🐝', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🌺 Nektar & Debunga' },
+      { query: 'Rama-rama', emoji: '🦋', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🌸 Manisan Bunga Segar' },
+      { query: 'Sotong_kurita', emoji: '🐙', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🦀 Ketam, Udang & Kerang' }
+    ];
 
-// ─── Modal ───
-let lastFocused = null;
+    let activeFilter = 'Semua';
 
-function openCategory(type){
-  const modal = document.getElementById('modal');
-  const title = document.getElementById('modalTitle');
-  const sub = document.getElementById('modalSub');
-  const factsDiv = document.getElementById('modalFacts');
-  const audioDiv = document.getElementById('modalAudio');
-  const attrib = document.getElementById('wikiAttrib');
-  const link = document.getElementById('wikiLink');
-  const placeholder = document.querySelector('#modalImgWrap .placeholder');
-  const closeBtn = document.querySelector('.modal-close');
-
-  lastFocused = document.activeElement;
-  audioDiv.style.display = 'none';
-  attrib.style.display = 'none';
-  setModalImg(null);
-  placeholder.textContent = { dogs:'🐕', cats:'🐈', birds:'🐦', fish:'🐟', endangered:'🌍' }[type] || '🔍';
-  modal.classList.add('open');
-  modal.focus();
-  if (closeBtn) setTimeout(() => closeBtn.focus(), 100);
-
-  title.textContent = '';
-  sub.textContent = '';
-  factsDiv.innerHTML = '<div class="skeleton" style="height:60px"></div>';
-
-  const catMeta = {
-    dogs: ['🐕', i18n[currentLang].cat_dogs || 'Dog', "Man's best friend"],
-    cats: ['🐈', i18n[currentLang].cat_cats || 'Cat', 'Professional napper'],
-    birds: ['🐦', i18n[currentLang].cat_birds || 'Bird', 'Sky dancer'],
-    fish: ['🐟', i18n[currentLang].cat_fish || 'Fish', 'Ocean dweller'],
-    endangered: ['🌍', i18n[currentLang].cat_endangered || 'Endangered', 'Need our help']
-  };
-  const meta = catMeta[type];
-  let wikiUrl = '';
-
-  (async () => {
-    const page = await findAnimalPage(type);
-    let wikiData = page ? await getWikiPage(page) : null;
-
-    if (wikiData) {
-      if (wikiData.thumbnail?.source) setModalImg(wikiData.thumbnail.source);
-      const cleanName = stripHtml(wikiData.displaytitle || meta[1]).replace(/\(.*?\)/g,'').trim();
-      title.textContent = `${meta[0]} ${cleanName}`;
-      document.getElementById('modalImg').alt = cleanName;
-      sub.textContent = meta[2];
-      const extract = stripHtml(wikiData.extract || '').split('. ').slice(0,2).join('. ') + '.';
-      factsDiv.innerHTML = '';
-      if (extract.length > 10) factsDiv.innerHTML = `<p class="fact">${extract}</p>`;
-      const catFacts = facts[type] || facts.dogs;
-      catFacts.forEach(f => { factsDiv.innerHTML += `<p class="fact">• ${f}</p>`; });
-      wikiUrl = wikiData.content_urls?.desktop?.page || '';
-    } else {
-      title.textContent = `${meta[0]} ${meta[1]}`;
-      sub.textContent = meta[2];
-      const catFacts = facts[type] || facts.dogs;
-      factsDiv.innerHTML = catFacts.map(f => `<p class="fact">• ${f}</p>`).join('');
-    }
-
-    if (wikiUrl) {
-      attrib.style.display = 'block';
-      link.href = wikiUrl;
-    }
-
-    if (type === 'endangered') {
-      const s = endangeredSpecies[Math.floor(Math.random()*endangeredSpecies.length)];
-      title.textContent = s.emoji + ' ' + s.name;
-      sub.textContent = 'Status: ' + s.status;
-      if (!wikiData || !wikiData.thumbnail?.source) {
-        const img = await getWikiPage(s.name);
-        if (img?.thumbnail?.source) setModalImg(img.thumbnail.source);
+    // =========================================================================
+    // 2. FUNGSI FETCH PUBLIC API (WIKIPEDIA BAHASA MELAYU REST API)
+    // =========================================================================
+    // Tarik gambar sebenar (thumbnail) secara automatik untuk semua kad haiwan
+    async function hydrateImagesFromPublicAPI() {
+      for (const animal of animals) {
+        if (animal.imgUrl || !animal.wikiTitle) continue;
+        try {
+          const res = await fetch(`https://ms.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(animal.wikiTitle)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.thumbnail && data.thumbnail.source) {
+              animal.imgUrl = data.thumbnail.source;
+              const imgEl = document.getElementById(`img-${animal.id}`);
+              if (imgEl) {
+                imgEl.src = animal.imgUrl;
+                imgEl.style.display = 'block';
+              }
+            }
+          }
+        } catch (err) {
+          // Jika offline, kekalkan paparan emoji comel
+        }
       }
     }
 
-    if (type === 'birds') {
+    // Cari apa-apa haiwan terus dari Wikipedia Bahasa Melayu Public API
+    async function searchAnimalFromAPI(customMeta = null) {
+      const inputEl = document.getElementById('api-search-input');
+      const statusEl = document.getElementById('api-status');
+      const rawQuery = customMeta ? customMeta.query : inputEl.value.trim();
+
+      if (!rawQuery) {
+        alert('Sila taip nama haiwan terlebih dahulu (contoh: Singa, Arnab, Paus)!');
+        return;
+      }
+
+      sfxPop();
+      statusEl.style.display = 'block';
+      statusEl.style.color = '#e65100';
+      statusEl.textContent = `⏳ Sedang memanggil data "${rawQuery.replace(/_/g, ' ')}" daripada Public API...`;
+
       try {
-        const r = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://xeno-canto.org/api/2/recordings?query=song&page=1&pageSize=20'));
-        const xc = await r.json();
-        if (xc?.recordings?.length > 0) {
-          const recs = xc.recordings.filter(r => r.file);
-          if (recs.length > 0) {
-            const rec = recs[Math.floor(Math.random()*Math.min(recs.length,5))];
-            audioDiv.style.display = 'flex';
-            document.getElementById('audioLabel').textContent = (rec.en || rec.fr || 'Bird') + ' — ' + (rec.type || 'song');
-            document.getElementById('audioPlayBtn').onclick = () => {
-              const audio = document.getElementById('birdAudio') || (() => {
-                const a = new Audio(); a.id = 'birdAudio'; a.preload = 'none';
-                document.body.appendChild(a); return a;
-              })();
-              audio.src = 'https:' + rec.file;
-              audio.play();
-            };
-            return;
+        // 1. Cari tajuk tepat melalui Wikipedia OpenSearch API
+        const searchUrl = `https://ms.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(rawQuery)}&limit=1&namespace=0&format=json&origin=*`;
+        const searchRes = await fetch(searchUrl);
+        const searchData = await searchRes.json();
+        const bestTitle = (searchData[1] && searchData[1][0]) ? searchData[1][0] : rawQuery;
+
+        // 2. Tarik ringkasan fakta & gambar daripada REST API v1
+        const summaryUrl = `https://ms.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestTitle)}`;
+        const summaryRes = await fetch(summaryUrl);
+
+        if (!summaryRes.ok) throw new Error('Tidak dijumpai');
+        const data = await summaryRes.json();
+
+        // Potong ekstrak supaya sesuai dibaca murid sekolah rendah (1-2 ayat)
+        let shortFact = data.extract || 'Spesies hidupan unik yang diterokai melalui Wikipedia Public API!';
+        if (shortFact.length > 210) {
+          shortFact = shortFact.substring(0, 205).replace(/\s+\S*$/, '') + '...';
+        }
+
+        // Tentukan ciri automatik berdasarkan kata kunci teks jika pengguna menaip sendiri
+        const lowerText = shortFact.toLowerCase();
+        let guessedDiet = customMeta?.diet || 'Omnivor';
+        let guessedFood = customMeta?.favFood || '🍒 Sumber Alam Semula Jadi';
+        if (!customMeta) {
+          if (lowerText.includes('daging') || lowerText.includes('pemangsa') || lowerText.includes('ikan') || lowerText.includes('memburu')) {
+            guessedDiet = 'Karnivor';
+            guessedFood = '🥩 Daging & Mangsa Buruan';
+          } else if (lowerText.includes('tumbuhan') || lowerText.includes('rumput') || lowerText.includes('daun') || lowerText.includes('herbivor')) {
+            guessedDiet = 'Herbivor';
+            guessedFood = '🌿 Daun, Rumput & Tumbuhan';
           }
         }
-      } catch {}
-      audioDiv.style.display = 'flex';
-      document.getElementById('audioLabel').textContent = '🔊 Synthetic chirp';
-      document.getElementById('audioPlayBtn').onclick = chirp;
+
+        let guessedHabitat = customMeta?.habitat || 'Hutan Hujan';
+        if (!customMeta) {
+          if (lowerText.includes('laut') || lowerText.includes('air') || lowerText.includes('sungai') || lowerText.includes('ikan')) {
+            guessedHabitat = 'Sungai & Laut';
+          } else if (lowerText.includes('terbang') || lowerText.includes('burung') || lowerText.includes('sayap')) {
+            guessedHabitat = 'Udara & Kanopi';
+          }
+        }
+
+        const newId = 'api-' + Date.now();
+        const newAnimal = {
+          id: newId,
+          name: data.title || rawQuery,
+          wikiTitle: bestTitle,
+          sci: data.description || 'Spesies Terokaan Public API',
+          emoji: customMeta?.emoji || '🐾',
+          habitat: guessedHabitat,
+          diet: guessedDiet,
+          soundText: '✨ Haiwan baharu ditemui dari API!',
+          favFood: guessedFood,
+          fact: shortFact,
+          imgUrl: data.thumbnail ? data.thumbnail.source : null,
+          isFromAPI: true
+        };
+
+        // Masukkan ke paling atas senarai haiwan & bina semula dek kuiz!
+        animals.unshift(newAnimal);
+        questionDeck = buildQuestionPool();
+        updateCounters();
+        renderAnimals(activeFilter);
+
+        sfxCorrect();
+        addStars(15);
+        launchConfetti();
+        if (!customMeta) inputEl.value = '';
+
+        statusEl.style.color = '#2e7d32';
+        statusEl.textContent = `✅ Berjaya! "${newAnimal.name}" ditambah ke kad & soalan kuiz (+15 ⭐)!`;
+      } catch (err) {
+        sfxWrong();
+        statusEl.style.color = '#c62828';
+        statusEl.textContent = `⚠️ Maaf, haiwan "${rawQuery}" tidak dijumpai di Wikipedia Bahasa Melayu. Cuba ejaan lain (cth: Singa, Kuda, Paus).`;
+      }
     }
-  })();
-}
 
-function setModalImg(src){
-  const wrap = document.getElementById('modalImgWrap');
-  const img = document.getElementById('modalImg');
-  if (src) {
-    img.src = src; img.classList.add('show');
-    wrap.classList.remove('noimg');
-  } else {
-    img.classList.remove('show');
-    wrap.classList.add('noimg');
-  }
-}
+    function summonRandomAPIAnimal() {
+      // Pilih satu haiwan daripada randomAPIPool yang belum ada dalam senarai
+      const existingNames = animals.map(a => a.name.toLowerCase());
+      const available = randomAPIPool.filter(p => !existingNames.includes(p.query.replace(/_/g, ' ').toLowerCase()));
+      const pick = available.length > 0
+        ? available[Math.floor(Math.random() * available.length)]
+        : randomAPIPool[Math.floor(Math.random() * randomAPIPool.length)];
 
-function closeModal(){
-  document.getElementById('modal').classList.remove('open');
-  const audio = document.getElementById('birdAudio');
-  if (audio) audio.pause();
-  if (lastFocused) lastFocused.focus();
-}
+      searchAnimalFromAPI(pick);
+    }
 
-// ─── Surprise Me ───
-function surpriseMe(){
-  const types = ['dogs','cats','birds','fish','endangered'];
-  openCategory(types[Math.floor(Math.random()*types.length)]);
-}
+    function updateCounters() {
+      document.getElementById('total-animals-count').textContent = animals.length;
+      document.getElementById('quiz-pool-count').textContent = (animals.length * 4 + extraStaticQuestions.length) + '+';
+    }
 
-// ─── Hero Fact Cycle ───
-let factIdx = 0;
-function cycleHeroFact(){
-  const el = document.getElementById('heroFact');
-  if (el) {
-    el.style.opacity = '0';
-    setTimeout(() => {
-      factIdx = (factIdx + 1) % heroFacts.length;
-      el.textContent = 'Did you know? ' + heroFacts[factIdx];
-      el.style.opacity = '1';
-    }, 400);
-  }
-}
+    // =========================================================================
+    // 3. WEB AUDIO API (BUNYI TANPA FAIL LUARAN)
+    // =========================================================================
+    let soundEnabled = true;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
 
-// ─── Endangered ───
-function renderEndangered(){
-  const scroll = document.getElementById('endScroll');
-  scroll.innerHTML = '';
-  shuffle([...endangeredSpecies]).forEach(s => {
-    const card = document.createElement('div');
-    card.className = 'end-card';
-    card.innerHTML = `
-      <div class="end-emoji">${s.emoji}</div>
-      <h3>${s.name}</h3>
-      <div class="end-status ${s.statusClass}">${s.status.toUpperCase()}</div>
-      <div class="info">${s.fact}</div>
-      <div class="pop-bar"><div class="pop-bar-fill" style="width:${s.popPct}%"></div></div>
-    `;
-    scroll.appendChild(card);
-  });
-}
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+    }
 
-// ─── Init ───
-document.addEventListener('DOMContentLoaded', () => {
-  refreshAOTD();
-  renderQuiz();
-  renderEndangered();
-  loadCatImages();
-  setInterval(cycleHeroFact, 5000);
-  // keyboard: Escape closes modal
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
-  });
-});
-</script>
+    function playTone(freq, type = 'sine', duration = 0.18, delay = 0) {
+      if (!soundEnabled) return;
+      initAudio();
+      setTimeout(() => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      }, delay);
+    }
+
+    function sfxPop() {
+      playTone(520, 'triangle', 0.12);
+      playTone(760, 'sine', 0.15, 60);
+    }
+
+    function sfxCorrect() {
+      playTone(523.25, 'sine', 0.15, 0);      // C5
+      playTone(659.25, 'sine', 0.15, 100);    // E5
+      playTone(783.99, 'sine', 0.2, 200);     // G5
+      playTone(1046.5, 'triangle', 0.35, 300); // C6
+    }
+
+    function sfxWrong() {
+      playTone(220, 'sawtooth', 0.2, 0);
+      playTone(170, 'sawtooth', 0.3, 150);
+    }
+
+    document.getElementById('toggle-sound').addEventListener('click', (e) => {
+      soundEnabled = !soundEnabled;
+      e.target.textContent = soundEnabled ? '🔊' : '🔇';
+      if (!soundEnabled && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    });
+
+    // =========================================================================
+    // 4. SISTEM BINTANG & PANGKAT RENJER CILIK
+    // =========================================================================
+    let stars = 0;
+
+    function addStars(amount) {
+      stars += amount;
+      const starEl = document.getElementById('star-count');
+      const pillEl = document.getElementById('star-pill');
+      starEl.textContent = stars;
+      pillEl.classList.add('pop');
+      setTimeout(() => pillEl.classList.remove('pop'), 250);
+
+      const rankSpan = document.querySelector('#ranger-rank span');
+      if (stars >= 150) {
+        rankSpan.textContent = '👑 Wira Rimba Malaysia!';
+      } else if (stars >= 80) {
+        rankSpan.textContent = '🌟 Renjer Muda';
+      } else if (stars >= 30) {
+        rankSpan.textContent = '🧭 Pengakap Hutan';
+      }
+    }
+
+    // =========================================================================
+    // 5. RENDER KAD TEROKA HABITAT (DENGAN GAMBAR PUBLIC API)
+    // =========================================================================
+    const gridEl = document.getElementById('animal-grid');
+
+    function renderAnimals(filter = 'Semua') {
+      activeFilter = filter;
+      gridEl.innerHTML = '';
+      const filtered = animals.filter(a => {
+        if (filter === 'Semua') return true;
+        return a.habitat === filter || a.diet === filter;
+      });
+
+      filtered.forEach(animal => {
+        const card = document.createElement('div');
+        card.className = 'animal-card';
+
+        const safeFact = animal.fact.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeName = animal.name.replace(/'/g, "\\'");
+        const safeFood = animal.favFood.replace(/'/g, "\\'");
+
+        card.innerHTML = `
+          <div>
+            <div class="card-top">
+              <span class="diet-tag diet-${animal.diet}">${animal.diet}</span>
+              <span class="habitat-tag">📍 ${animal.habitat}</span>
+            </div>
+            <div class="visual-stage" onclick="pokeAnimal(this, '${animal.id}')" title="Klik saya!">
+              <img
+                id="img-${animal.id}"
+                class="animal-photo"
+                src="${animal.imgUrl || ''}"
+                alt="${animal.name}"
+                style="display: ${animal.imgUrl ? 'block' : 'none'};"
+                onerror="this.style.display='none'"
+              />
+              <div class="${animal.imgUrl ? 'emoji-badge' : 'emoji-fallback'}">${animal.emoji}</div>
+            </div>
+            <h3 class="animal-name">${animal.name}</h3>
+            <p class="animal-sci">${animal.sci}</p>
+            <div class="sound-bubble" id="bubble-${animal.id}">
+              💬 "${animal.soundText}"
+            </div>
+            <div class="fact-box">
+              ${animal.isFromAPI ? '<span class="api-live-badge">🌐 DATA LIVE PUBLIC API</span><br/>' : ''}
+              <strong>Tahukah adik?</strong> ${animal.fact}
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-action btn-speak" onclick="speakFact('${safeName}. ${safeFact}')">
+              🔊 Dengar Fakta
+            </button>
+            <button class="btn-action btn-feed" onclick="feedCardAnimal(event, '${animal.id}', '${safeFood}')">
+              🍎 Beri Makan
+            </button>
+          </div>
+        `;
+        gridEl.appendChild(card);
+      });
+    }
+
+    function filterAnimals(category, btnEl) {
+      sfxPop();
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      renderAnimals(category);
+    }
+
+    function pokeAnimal(stageEl, id) {
+      sfxPop();
+      stageEl.classList.remove('jump');
+      void stageEl.offsetWidth; // trigger reflow
+      stageEl.classList.add('jump');
+      addStars(5);
+    }
+
+    function feedCardAnimal(event, id, favFood) {
+      sfxCorrect();
+      addStars(10);
+      const bubble = document.getElementById(`bubble-${id}`);
+      if (bubble) {
+        bubble.textContent = `😋 "Sedapnya ${favFood}! Terima kasih kawan!"`;
+      }
+
+      const card = event.target.closest('.animal-card');
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.textContent = '❤️ +10⭐';
+      heart.style.left = '42%';
+      heart.style.top = '38%';
+      card.appendChild(heart);
+      setTimeout(() => heart.remove(), 1000);
+    }
+
+    function speakFact(text) {
+      sfxPop();
+      if (!soundEnabled) return;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'ms-MY';
+        utter.rate = 0.95;
+        utter.pitch = 1.1;
+        window.speechSynthesis.speak(utter);
+      } else {
+        alert(text);
+      }
+    }
+
+    // =========================================================================
+    // 6. MOD KUIZ CILIK (DYNAMIC GENERATOR 70+ SOALAN + ANTI-BERULANG)
+    // =========================================================================
+    const extraStaticQuestions = [
+      {
+        emoji: '🐯',
+        q: 'Apakah maksud haiwan "Karnivor"?',
+        correctAns: 'Haiwan yang makan daging atau haiwan lain sahaja',
+        wrongAns: ['Haiwan yang makan tumbuhan sahaja', 'Haiwan yang makan tumbuhan dan daging', 'Haiwan yang makan batu dan pasir']
+      },
+      {
+        emoji: '🌿',
+        q: 'Apakah maksud haiwan "Herbivor"?',
+        correctAns: 'Haiwan yang makan tumbuh-tumbuhan sahaja',
+        wrongAns: ['Haiwan yang makan daging sahaja', 'Haiwan yang makan serangga sahaja', 'Haiwan yang hidup di dasar laut']
+      },
+      {
+        emoji: '🍌',
+        q: 'Apakah maksud haiwan "Omnivor"?',
+        correctAns: 'Haiwan yang makan tumbuh-tumbuhan dan juga haiwan lain',
+        wrongAns: ['Haiwan yang makan rumput kering sahaja', 'Haiwan yang makan daging sahaja', 'Haiwan yang tidak mempunyai tulang belakang']
+      },
+      {
+        emoji: '🦜',
+        q: 'Burung Enggang Badak terkenal sebagai lambang rasmi bagi negeri mana?',
+        correctAns: 'Sarawak (Bumi Kenyalang)',
+        wrongAns: ['Sabah (Negeri Di Bawah Bayu)', 'Melaka', 'Perlis']
+      },
+      {
+        emoji: '🦅',
+        q: 'Helang Merah merupakan mercu tanda terkenal bagi pulau pelancongan mana?',
+        correctAns: 'Pulau Langkawi, Kedah',
+        wrongAns: ['Pulau Tioman, Pahang', 'Pulau Pangkor, Perak', 'Pulau Sipadan, Sabah']
+      },
+      {
+        emoji: '🦔',
+        q: 'Bagaimanakah Tenggiling Sunda mempertahankan dirinya daripada pemangsa?',
+        correctAns: 'Menggulungkan badannya menjadi bola bersisik keras',
+        wrongAns: ['Terbang tinggi ke atas awan', 'Menyembur dakwat hitam', 'Berlari selaju kereta lumba']
+      }
+    ];
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function buildQuestionPool() {
+      const pool = [];
+
+      animals.forEach(animal => {
+        // 1. Soalan Diet
+        const allDiets = ['Karnivor', 'Herbivor', 'Omnivor'];
+        const wrongDiets = allDiets.filter(d => d !== animal.diet);
+        pool.push({
+          emoji: animal.emoji,
+          q: `Apakah kumpulan tabiat pemakanan bagi ${animal.name}?`,
+          correctAns: animal.diet,
+          wrongAns: [...wrongDiets, 'Fotosintesis']
+        });
+
+        // 2. Soalan Makanan Kegemaran
+        const otherFoods = [...new Set(animals.filter(a => a.id !== animal.id).map(a => a.favFood))];
+        pool.push({
+          emoji: animal.emoji,
+          q: `Antara berikut, apakah makanan kegemaran ${animal.name}?`,
+          correctAns: animal.favFood,
+          wrongAns: shuffleArray(otherFoods).slice(0, 3)
+        });
+
+        // 3. Soalan Teka Haiwan Berdasarkan Fakta
+        const otherNames = animals
+          .filter(a => a.id !== animal.id)
+          .map(a => `${a.emoji} ${a.name}`);
+        pool.push({
+          emoji: '🕵️‍♂️',
+          q: `Teka siapakah saya: "${animal.fact}"`,
+          correctAns: `${animal.emoji} ${animal.name}`,
+          wrongAns: shuffleArray(otherNames).slice(0, 3)
+        });
+
+        // 4. Soalan Habitat
+        const allHabitats = ['Hutan Hujan', 'Sungai & Laut', 'Udara & Kanopi', 'Gurun Pasir Kering'];
+        const wrongHabitats = allHabitats.filter(h => h !== animal.habitat);
+        pool.push({
+          emoji: animal.emoji,
+          q: `Di manakah habitat semula jadi utama bagi ${animal.name}?`,
+          correctAns: animal.habitat,
+          wrongAns: wrongHabitats.slice(0, 3)
+        });
+      });
+
+      return shuffleArray([...pool, ...extraStaticQuestions]);
+    }
+
+    let questionDeck = [];
+    let currentRoundQuestions = [];
+    const QUESTIONS_PER_ROUND = 6;
+    let currentQ = 0;
+    let streak = 0;
+    let roundScore = 0;
+
+    function startNewQuizRound() {
+      if (questionDeck.length < QUESTIONS_PER_ROUND) {
+        questionDeck = buildQuestionPool();
+      }
+      currentRoundQuestions = questionDeck.splice(0, QUESTIONS_PER_ROUND);
+      currentQ = 0;
+      roundScore = 0;
+      loadQuiz();
+    }
+
+    function loadQuiz() {
+      const qData = currentRoundQuestions[currentQ];
+      document.getElementById('quiz-qnum').textContent = `Soalan ${currentQ + 1} / ${currentRoundQuestions.length} (Baki Dek Unik: ${questionDeck.length})`;
+      document.getElementById('quiz-streak').textContent = `🔥 Kombo: ${streak}`;
+      document.getElementById('quiz-emoji').textContent = qData.emoji;
+      document.getElementById('quiz-question').textContent = qData.q;
+      document.getElementById('quiz-feedback').textContent = '';
+
+      const allChoices = shuffleArray([
+        { text: qData.correctAns, isCorrect: true },
+        ...qData.wrongAns.slice(0, 3).map(w => ({ text: w, isCorrect: false }))
+      ]);
+
+      const optsContainer = document.getElementById('quiz-options');
+      optsContainer.innerHTML = '';
+
+      allChoices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt-btn';
+        btn.textContent = choice.text;
+        btn.dataset.correct = choice.isCorrect;
+        btn.onclick = () => checkAnswer(choice.isCorrect, btn);
+        optsContainer.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(isCorrect, btnEl) {
+      const allBtns = document.querySelectorAll('.quiz-opt-btn');
+      allBtns.forEach(b => b.disabled = true);
+
+      const feedbackEl = document.getElementById('quiz-feedback');
+
+      if (isCorrect) {
+        btnEl.classList.add('correct');
+        sfxCorrect();
+        streak++;
+        roundScore++;
+        addStars(20);
+        launchConfetti();
+        feedbackEl.style.color = '#2e7d32';
+        feedbackEl.textContent = '🎉 Tahniah! Jawapan adik tepat sekali! (+20 ⭐)';
+      } else {
+        btnEl.classList.add('wrong');
+        allBtns.forEach(b => {
+          if (b.dataset.correct === 'true') b.classList.add('correct');
+        });
+        sfxWrong();
+        streak = 0;
+        feedbackEl.style.color = '#c62828';
+        feedbackEl.textContent = '💡 Hampir tepat! Perhatikan jawapan betul yang berwarna hijau ya.';
+      }
+
+      setTimeout(() => {
+        currentQ++;
+        if (currentQ < currentRoundQuestions.length) {
+          loadQuiz();
+        } else {
+          showQuizSummary();
+        }
+      }, 2200);
+    }
+
+    function showQuizSummary() {
+      sfxCorrect();
+      launchConfetti();
+      document.getElementById('quiz-emoji').textContent = '🏆';
+      document.getElementById('quiz-question').textContent = `Pusingan Tamat! Adik berjaya jawab ${roundScore} daripada ${currentRoundQuestions.length} soalan dengan betul!`;
+      document.getElementById('quiz-feedback').textContent = 'Nak cuba set soalan baharu yang belum pernah keluar?';
+
+      const optsContainer = document.getElementById('quiz-options');
+      optsContainer.innerHTML = `
+        <button class="quiz-opt-btn correct" style="grid-column: 1 / -1; font-size: 1.2rem;" onclick="startNewQuizRound()">
+          🚀 Main Pusingan Baharu (Soalan Lain Pula!)
+        </button>
+      `;
+    }
+
+    // =========================================================================
+    // 7. MOD SUAP MAKANAN (ANTI-ULANG BERTURUT-TURUT)
+    // =========================================================================
+    let currentHungryAnimal = animals[0];
+
+    function nextHungryAnimal() {
+      const candidates = animals.filter(a => a.id !== currentHungryAnimal.id);
+      const randIndex = Math.floor(Math.random() * candidates.length);
+      currentHungryAnimal = candidates[randIndex];
+      document.getElementById('hungry-emoji').textContent = currentHungryAnimal.emoji;
+      document.getElementById('hungry-name').textContent = currentHungryAnimal.name;
+      document.getElementById('hungry-hint').textContent = `"Saya lapar! Apakah kumpulan makanan saya?"`;
+      document.getElementById('feed-feedback').textContent = '';
+    }
+
+    function checkFoodChoice(chosenDiet) {
+      const feedback = document.getElementById('feed-feedback');
+      const emojiEl = document.getElementById('hungry-emoji');
+
+      if (chosenDiet === currentHungryAnimal.diet) {
+        sfxCorrect();
+        addStars(15);
+        launchConfetti();
+        emojiEl.style.transform = 'scale(1.3) rotate(10deg)';
+        setTimeout(() => emojiEl.style.transform = 'scale(1)', 400);
+
+        feedback.style.color = '#2e7d32';
+        feedback.textContent = `🥳 Yum yum! Betul, ${currentHungryAnimal.name} ialah ${currentHungryAnimal.diet} dan suka makan ${currentHungryAnimal.favFood}! (+15 ⭐)`;
+        setTimeout(nextHungryAnimal, 2200);
+      } else {
+        sfxWrong();
+        feedback.style.color = '#c62828';
+        feedback.textContent = `🙈 Alamak, ${currentHungryAnimal.name} tak makan itu! Cuba pilih kumpulan makanan lain.`;
+      }
+    }
+
+    // =========================================================================
+    // 8. TUKAR TAB & KONFETI HTML5 CANVAS
+    // =========================================================================
+    function switchMode(mode, btnEl) {
+      sfxPop();
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+
+      document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${mode}`).classList.add('active');
+    }
+
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      const colors = ['#ff4081', '#ffeb3b', '#00e676', '#29b6f6', '#ff9100'];
+      for (let i = 0; i < 45; i++) {
+        particles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.8) * 14,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 70
+        });
+      }
+    }
+
+    function updateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.life--;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+      requestAnimationFrame(updateConfetti);
+    }
+
+    // Mulakan Aplikasi
+    updateCounters();
+    renderAnimals();
+    hydrateImagesFromPublicAPI(); // Tarik gambar sebenar dari Wikipedia REST API
+    startNewQuizRound();
+    nextHungryAnimal();
+    updateConfetti();
+  </script>
 </body>
 </html>
