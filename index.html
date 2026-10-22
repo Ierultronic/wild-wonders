@@ -213,7 +213,7 @@
       display: block;
     }
 
-    /* Bar Carian Public API &Tambah Haiwan */
+    /* Bar Carian Public API & Tambah Haiwan */
     .api-explorer-bar {
       background: linear-gradient(135deg, #fff8e1, #ffffff);
       border: 3px solid #ffb300;
@@ -396,10 +396,10 @@
       border-radius: 12px;
     }
 
-    /* Visual Haiwan: Gambar API Sebenar + Emoji Interaktif */
+    /* Visual Haiwan: Gambar API Sebenar + Klik Buka Modal */
     .visual-stage {
       position: relative;
-      height: 170px;
+      height: 180px;
       border-radius: 18px;
       background: linear-gradient(135deg, #e8f5e9, #e0f7fa);
       display: flex;
@@ -422,15 +422,38 @@
       transform: scale(1.08);
     }
 
+    .zoom-hint-pill {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(27, 94, 32, 0.85);
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .visual-stage:hover .zoom-hint-pill {
+      background: #ff9800;
+      transform: scale(1.06);
+    }
+
     .emoji-badge {
       position: absolute;
       bottom: 8px;
       right: 10px;
-      font-size: 2.5rem;
-      background: rgba(255, 255, 255, 0.9);
+      font-size: 2.4rem;
+      background: rgba(255, 255, 255, 0.92);
       border-radius: 50%;
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -528,9 +551,213 @@
       box-shadow: 0 4px 0 #d84315;
     }
 
+    .btn-detail {
+      grid-column: 1 / -1;
+      background: #7e57c2;
+      color: white;
+      box-shadow: 0 4px 0 #512da8;
+    }
+
     .btn-action:active {
       transform: translateY(4px);
       box-shadow: none;
+    }
+
+    /* =========================================================
+       MODAL POPUP GAMBAR & INFO TERPERINCI HAIWAN
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 35, 20, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 500;
+      animation: fadeIn 0.22s ease;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 5px solid #66bb6a;
+      border-radius: 30px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+      position: relative;
+      animation: modalPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-close-btn {
+      position: sticky;
+      top: 14px;
+      float: right;
+      margin: 14px 16px 0 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid #ffcdd2;
+      background: #e53935;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b71c1c;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+    }
+
+    .modal-close-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .modal-hero {
+      position: relative;
+      width: 100%;
+      min-height: 250px;
+      max-height: 360px;
+      background: linear-gradient(135deg, #1b5e20, #81c784);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 4px solid #c8e6c9;
+    }
+
+    .modal-hero-img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      background: #102a13;
+      display: none;
+    }
+
+    .modal-hero-emoji {
+      font-size: 6.5rem;
+      padding: 36px 0;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,0.25));
+    }
+
+    .modal-body {
+      padding: 24px 26px 28px;
+    }
+
+    .modal-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .modal-title {
+      font-size: 1.85rem;
+      color: #1b5e20;
+    }
+
+    .modal-sci {
+      font-size: 0.98rem;
+      font-style: italic;
+      color: #607d8b;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .modal-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .modal-meta-item {
+      background: #f1f8e9;
+      border: 2px solid #c5e1a5;
+      border-radius: 16px;
+      padding: 10px 14px;
+    }
+
+    .modal-meta-label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #558b2f;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .modal-meta-val {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #263238;
+    }
+
+    .modal-section-box {
+      background: #fffde7;
+      border: 3px solid #ffe082;
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+
+    .modal-section-box h4 {
+      font-family: 'Fredoka', sans-serif;
+      color: #e65100;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-section-box p {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: #37474f;
+      font-weight: 600;
+    }
+
+    .modal-wiki-box {
+      background: #e3f2fd;
+      border: 3px solid #90caf9;
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+
+    .modal-wiki-box h4 {
+      font-family: 'Fredoka', sans-serif;
+      color: #0d47a1;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .modal-wiki-box p {
+      font-size: 0.96rem;
+      line-height: 1.65;
+      color: #1e293b;
+      font-weight: 600;
+      white-space: pre-line;
+    }
+
+    .modal-footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
     }
 
     /* Mod Kuiz */
@@ -715,11 +942,68 @@
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.88) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <canvas id="confetti-canvas"></canvas>
+
+  <!-- MODAL POPUP GAMBAR BESAR & INFO LENGKAP -->
+  <div class="modal-overlay" id="animal-modal" onclick="handleOverlayClick(event)">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeAnimalModal()" title="Tutup">✕</button>
+      <div class="modal-hero">
+        <img id="modal-img" class="modal-hero-img" src="" alt="" />
+        <div id="modal-emoji" class="modal-hero-emoji">🐯</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-title-row">
+          <h2 class="modal-title" id="modal-name">Harimau Malaya</h2>
+          <span class="diet-tag" id="modal-diet-badge">Karnivor</span>
+        </div>
+        <p class="modal-sci" id="modal-sci">Panthera tigris jacksoni</p>
+
+        <div class="modal-meta-grid">
+          <div class="modal-meta-item">
+            <span class="modal-meta-label">📍 Habitat Utama</span>
+            <span class="modal-meta-val" id="modal-habitat">Hutan Hujan</span>
+          </div>
+          <div class="modal-meta-item">
+            <span class="modal-meta-label">🍽️ Makanan Kegemaran</span>
+            <span class="modal-meta-val" id="modal-food">🥩 Daging Rusa</span>
+          </div>
+          <div class="modal-meta-item">
+            <span class="modal-meta-label">🔊 Bunyi / Aksi</span>
+            <span class="modal-meta-val" id="modal-sound">AUMMM!</span>
+          </div>
+        </div>
+
+        <div class="modal-section-box">
+          <h4>🌟 Fakta Penting Sains KSSR</h4>
+          <p id="modal-short-fact"></p>
+        </div>
+
+        <div class="modal-wiki-box">
+          <h4>📖 Ensiklopedia Penuh (Live Public API Wikipedia)</h4>
+          <p id="modal-full-extract">Sedang memuatkan maklumat lengkap daripada Wikipedia Bahasa Melayu...</p>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button class="btn-action btn-speak" id="modal-speak-btn" style="padding: 12px 20px;">
+            🔊 Dengar Semua Info
+          </button>
+          <button class="btn-action btn-feed" onclick="closeAnimalModal()" style="padding: 12px 20px;">
+            👍 Faham & Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- HEADER & GAMIFIKASI -->
   <header>
@@ -763,14 +1047,14 @@
   <main>
     <!-- MOD 1: TEROKA HABITAT + INTEGRASI PUBLIC API -->
     <section id="panel-explore" class="section-panel active">
-      
-      <!-- BAR ENJIN PUBLIC API (WIKIPEDIA REST API + iNATURALIST/WIKIMEDIA) -->
+
+      <!-- BAR ENJIN PUBLIC API (WIKIPEDIA REST API) -->
       <div class="api-explorer-bar">
         <div class="api-info">
           <div class="api-info-icon">🌐</div>
           <div>
             <h3>Teroka Haiwan Dunia & Malaysia (Live Public API)</h3>
-            <p>Gambar & fakta sebenar ditarik secara langsung dari Wikipedia Bahasa Melayu API! Cuba cari apa-apa haiwan.</p>
+            <p>Klik pada gambar mana-mana haiwan untuk buka popup foto besar & baca artikel penuh dari Wikipedia API!</p>
           </div>
         </div>
         <div class="api-controls">
@@ -799,7 +1083,7 @@
       <div class="animal-grid" id="animal-grid"></div>
     </section>
 
-    <!-- MOD 2: KUIZ CILIK (RAWak & ANTI-BERULANG) -->
+    <!-- MOD 2: KUIZ CILIK (RAWAK & ANTI-BERULANG) -->
     <section id="panel-quiz" class="section-panel">
       <div class="quiz-box">
         <div class="quiz-progress">
@@ -1051,7 +1335,6 @@
       }
     ];
 
-    // Senarai cadangan haiwan tambahan untuk butang "Panggil Haiwan Rawak" dari Public API
     const randomAPIPool = [
       { query: 'Singa', emoji: '🦁', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🥩 Daging Zebra & Rusa' },
       { query: 'Zirafah', emoji: '🦒', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌿 Daun Pokok Akasia Tinggi' },
@@ -1073,9 +1356,8 @@
     let activeFilter = 'Semua';
 
     // =========================================================================
-    // 2. FUNGSI FETCH PUBLIC API (WIKIPEDIA BAHASA MELAYU REST API)
+    // 2. FUNGSI FETCH PUBLIC API & MODAL POPUP INFO TERPERINCI
     // =========================================================================
-    // Tarik gambar sebenar (thumbnail) secara automatik untuk semua kad haiwan
     async function hydrateImagesFromPublicAPI() {
       for (const animal of animals) {
         if (animal.imgUrl || !animal.wikiTitle) continue;
@@ -1083,6 +1365,10 @@
           const res = await fetch(`https://ms.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(animal.wikiTitle)}`);
           if (res.ok) {
             const data = await res.json();
+            if (data.extract) animal.fullExtract = data.extract;
+            if (data.originalimage && data.originalimage.source) {
+              animal.highResImg = data.originalimage.source;
+            }
             if (data.thumbnail && data.thumbnail.source) {
               animal.imgUrl = data.thumbnail.source;
               const imgEl = document.getElementById(`img-${animal.id}`);
@@ -1093,10 +1379,93 @@
             }
           }
         } catch (err) {
-          // Jika offline, kekalkan paparan emoji comel
+          // Kekalkan emoji jika tiada sambungan
         }
       }
     }
+
+    // Buka Modal Popup apabila pengguna klik pada gambar haiwan
+    async function openAnimalModal(animalId) {
+      const animal = animals.find(a => a.id === animalId);
+      if (!animal) return;
+
+      sfxPop();
+      addStars(5);
+
+      const modalEl = document.getElementById('animal-modal');
+      const modalImg = document.getElementById('modal-img');
+      const modalEmoji = document.getElementById('modal-emoji');
+      const dietBadge = document.getElementById('modal-diet-badge');
+      const fullExtractEl = document.getElementById('modal-full-extract');
+
+      document.getElementById('modal-name').textContent = `${animal.emoji} ${animal.name}`;
+      document.getElementById('modal-sci').textContent = animal.sci;
+      document.getElementById('modal-habitat').textContent = animal.habitat;
+      document.getElementById('modal-food').textContent = animal.favFood;
+      document.getElementById('modal-sound').textContent = animal.soundText;
+      document.getElementById('modal-short-fact').textContent = animal.fact;
+
+      dietBadge.textContent = animal.diet;
+      dietBadge.className = `diet-tag diet-${animal.diet}`;
+
+      // Papar gambar resolusi tinggi jika ada, atau fallback kepada emoji
+      const bestPhoto = animal.highResImg || animal.imgUrl;
+      if (bestPhoto) {
+        modalImg.src = bestPhoto;
+        modalImg.alt = animal.name;
+        modalImg.style.display = 'block';
+        modalEmoji.style.display = 'none';
+      } else {
+        modalImg.style.display = 'none';
+        modalEmoji.textContent = animal.emoji;
+        modalEmoji.style.display = 'block';
+      }
+
+      fullExtractEl.textContent = animal.fullExtract || '⏳ Sedang memuat turun maklumat penuh daripada Wikipedia Bahasa Melayu Public API...';
+      modalEl.classList.add('open');
+
+      // Tarik teks artikel lebih panjang daripada Wikipedia Action API jika belum ada
+      if (!animal.longWikiText && animal.wikiTitle) {
+        try {
+          const url = `https://ms.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=false&exchars=1100&explaintext=true&titles=${encodeURIComponent(animal.wikiTitle)}&format=json&origin=*`;
+          const res = await fetch(url);
+          const data = await res.json();
+          const pages = data?.query?.pages || {};
+          const firstPage = Object.values(pages)[0];
+          if (firstPage && firstPage.extract) {
+            animal.longWikiText = firstPage.extract.trim();
+          }
+        } catch (e) {
+          // Gunakan ringkasan sedia ada jika gagal
+        }
+      }
+
+      const finalArticle = animal.longWikiText || animal.fullExtract || animal.fact;
+      fullExtractEl.textContent = finalArticle;
+
+      // Butang suara dalam modal
+      document.getElementById('modal-speak-btn').onclick = () => {
+        speakFact(`${animal.name}. ${animal.fact}. ${finalArticle}`);
+      };
+    }
+
+    function closeAnimalModal() {
+      sfxPop();
+      document.getElementById('animal-modal').classList.remove('open');
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target.id === 'animal-modal') {
+        closeAnimalModal();
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAnimalModal();
+    });
 
     // Cari apa-apa haiwan terus dari Wikipedia Bahasa Melayu Public API
     async function searchAnimalFromAPI(customMeta = null) {
@@ -1115,27 +1484,24 @@
       statusEl.textContent = `⏳ Sedang memanggil data "${rawQuery.replace(/_/g, ' ')}" daripada Public API...`;
 
       try {
-        // 1. Cari tajuk tepat melalui Wikipedia OpenSearch API
         const searchUrl = `https://ms.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(rawQuery)}&limit=1&namespace=0&format=json&origin=*`;
         const searchRes = await fetch(searchUrl);
         const searchData = await searchRes.json();
         const bestTitle = (searchData[1] && searchData[1][0]) ? searchData[1][0] : rawQuery;
 
-        // 2. Tarik ringkasan fakta & gambar daripada REST API v1
         const summaryUrl = `https://ms.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestTitle)}`;
         const summaryRes = await fetch(summaryUrl);
 
         if (!summaryRes.ok) throw new Error('Tidak dijumpai');
         const data = await summaryRes.json();
 
-        // Potong ekstrak supaya sesuai dibaca murid sekolah rendah (1-2 ayat)
-        let shortFact = data.extract || 'Spesies hidupan unik yang diterokai melalui Wikipedia Public API!';
+        const fullText = data.extract || 'Spesies hidupan unik yang diterokai melalui Wikipedia Public API!';
+        let shortFact = fullText;
         if (shortFact.length > 210) {
           shortFact = shortFact.substring(0, 205).replace(/\s+\S*$/, '') + '...';
         }
 
-        // Tentukan ciri automatik berdasarkan kata kunci teks jika pengguna menaip sendiri
-        const lowerText = shortFact.toLowerCase();
+        const lowerText = fullText.toLowerCase();
         let guessedDiet = customMeta?.diet || 'Omnivor';
         let guessedFood = customMeta?.favFood || '🍒 Sumber Alam Semula Jadi';
         if (!customMeta) {
@@ -1166,14 +1532,15 @@
           emoji: customMeta?.emoji || '🐾',
           habitat: guessedHabitat,
           diet: guessedDiet,
-          soundText: '✨ Haiwan baharu ditemui dari API!',
+          soundText: '✨ Klik gambar saya untuk info penuh!',
           favFood: guessedFood,
           fact: shortFact,
+          fullExtract: fullText,
           imgUrl: data.thumbnail ? data.thumbnail.source : null,
+          highResImg: data.originalimage ? data.originalimage.source : null,
           isFromAPI: true
         };
 
-        // Masukkan ke paling atas senarai haiwan & bina semula dek kuiz!
         animals.unshift(newAnimal);
         questionDeck = buildQuestionPool();
         updateCounters();
@@ -1185,7 +1552,7 @@
         if (!customMeta) inputEl.value = '';
 
         statusEl.style.color = '#2e7d32';
-        statusEl.textContent = `✅ Berjaya! "${newAnimal.name}" ditambah ke kad & soalan kuiz (+15 ⭐)!`;
+        statusEl.textContent = `✅ Berjaya! "${newAnimal.name}" ditambah. Klik gambarnya untuk buka popup info penuh! (+15 ⭐)`;
       } catch (err) {
         sfxWrong();
         statusEl.style.color = '#c62828';
@@ -1194,7 +1561,6 @@
     }
 
     function summonRandomAPIAnimal() {
-      // Pilih satu haiwan daripada randomAPIPool yang belum ada dalam senarai
       const existingNames = animals.map(a => a.name.toLowerCase());
       const available = randomAPIPool.filter(p => !existingNames.includes(p.query.replace(/_/g, ' ').toLowerCase()));
       const pick = available.length > 0
@@ -1286,7 +1652,7 @@
     }
 
     // =========================================================================
-    // 5. RENDER KAD TEROKA HABITAT (DENGAN GAMBAR PUBLIC API)
+    // 5. RENDER KAD TEROKA HABITAT (KLIK GAMBAR -> BUKA MODAL INFO)
     // =========================================================================
     const gridEl = document.getElementById('animal-grid');
 
@@ -1312,7 +1678,8 @@
               <span class="diet-tag diet-${animal.diet}">${animal.diet}</span>
               <span class="habitat-tag">📍 ${animal.habitat}</span>
             </div>
-            <div class="visual-stage" onclick="pokeAnimal(this, '${animal.id}')" title="Klik saya!">
+            <div class="visual-stage" onclick="openAnimalModal('${animal.id}')" title="Klik untuk besarkan gambar & baca info penuh!">
+              <span class="zoom-hint-pill">🔍 Klik Info & Gambar</span>
               <img
                 id="img-${animal.id}"
                 class="animal-photo"
@@ -1340,6 +1707,9 @@
             <button class="btn-action btn-feed" onclick="feedCardAnimal(event, '${animal.id}', '${safeFood}')">
               🍎 Beri Makan
             </button>
+            <button class="btn-action btn-detail" onclick="openAnimalModal('${animal.id}')">
+              📖 Lihat Gambar Besar & Info Penuh
+            </button>
           </div>
         `;
         gridEl.appendChild(card);
@@ -1351,14 +1721,6 @@
       document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
       btnEl.classList.add('active');
       renderAnimals(category);
-    }
-
-    function pokeAnimal(stageEl, id) {
-      sfxPop();
-      stageEl.classList.remove('jump');
-      void stageEl.offsetWidth; // trigger reflow
-      stageEl.classList.add('jump');
-      addStars(5);
     }
 
     function feedCardAnimal(event, id, favFood) {
@@ -1449,7 +1811,6 @@
       const pool = [];
 
       animals.forEach(animal => {
-        // 1. Soalan Diet
         const allDiets = ['Karnivor', 'Herbivor', 'Omnivor'];
         const wrongDiets = allDiets.filter(d => d !== animal.diet);
         pool.push({
@@ -1459,7 +1820,6 @@
           wrongAns: [...wrongDiets, 'Fotosintesis']
         });
 
-        // 2. Soalan Makanan Kegemaran
         const otherFoods = [...new Set(animals.filter(a => a.id !== animal.id).map(a => a.favFood))];
         pool.push({
           emoji: animal.emoji,
@@ -1468,7 +1828,6 @@
           wrongAns: shuffleArray(otherFoods).slice(0, 3)
         });
 
-        // 3. Soalan Teka Haiwan Berdasarkan Fakta
         const otherNames = animals
           .filter(a => a.id !== animal.id)
           .map(a => `${a.emoji} ${a.name}`);
@@ -1479,7 +1838,6 @@
           wrongAns: shuffleArray(otherNames).slice(0, 3)
         });
 
-        // 4. Soalan Habitat
         const allHabitats = ['Hutan Hujan', 'Sungai & Laut', 'Udara & Kanopi', 'Gurun Pasir Kering'];
         const wrongHabitats = allHabitats.filter(h => h !== animal.habitat);
         pool.push({
@@ -1678,7 +2036,7 @@
     // Mulakan Aplikasi
     updateCounters();
     renderAnimals();
-    hydrateImagesFromPublicAPI(); // Tarik gambar sebenar dari Wikipedia REST API
+    hydrateImagesFromPublicAPI();
     startNewQuizRound();
     nextHungryAnimal();
     updateConfetti();
