@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wild Wonders Malaysia | Dunia Haiwan Interaktif + Public API</title>
+  <title>Wild Wonders Malaysia | Dunia Haiwan Interaktif + Public API Bunyi & Gambar</title>
   <!-- Google Fonts mesra kanak-kanak -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +24,14 @@
       --radius: 24px;
     }
 
+    body.night-mode {
+      --bg-sky: #0f172a;
+      --bg-jungle: #1e293b;
+      --card-bg: #1e293b;
+      --text-main: #81c784;
+      --text-dark: #f1f5f9;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -38,6 +46,7 @@
       min-height: 100vh;
       overflow-x: hidden;
       padding-bottom: 60px;
+      transition: background 0.4s ease, color 0.4s ease;
     }
 
     h1, h2, h3, .font-heading {
@@ -69,8 +78,13 @@
       z-index: 100;
     }
 
+    body.night-mode header {
+      background: linear-gradient(135deg, #0f172a, #311b92);
+      border-bottom-color: #090d16;
+    }
+
     .header-container {
-      max-width: 1150px;
+      max-width: 1180px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
@@ -88,6 +102,7 @@
     .brand-logo {
       font-size: 2.6rem;
       animation: bounceSlow 2.5s infinite ease-in-out;
+      cursor: pointer;
     }
 
     .brand-title h1 {
@@ -106,20 +121,20 @@
     .stats-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .badge-pill {
       background: rgba(255, 255, 255, 0.2);
       border: 2px solid rgba(255, 255, 255, 0.5);
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 999px;
       font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.95rem;
+      gap: 6px;
+      font-size: 0.92rem;
       backdrop-filter: blur(4px);
     }
 
@@ -135,44 +150,47 @@
       transform: scale(1.25);
     }
 
-    .sound-btn {
+    .icon-circle-btn {
       background: #ffffff;
       color: var(--primary);
       border: 3px solid #c8e6c9;
       border-radius: 50%;
       width: 44px;
       height: 44px;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       cursor: pointer;
       box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
       transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .sound-btn:active {
+    .icon-circle-btn:active {
       transform: translateY(4px);
       box-shadow: none;
     }
 
     /* Navigasi Tab */
     .mode-tabs {
-      max-width: 900px;
+      max-width: 1050px;
       margin: 24px auto 16px;
       display: flex;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       padding: 0 16px;
       flex-wrap: wrap;
     }
 
     .tab-btn {
       font-family: 'Fredoka', sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.08rem;
       font-weight: 600;
-      padding: 12px 24px;
+      padding: 12px 20px;
       border-radius: 20px;
       border: 3px solid #2e7d32;
       background: white;
-      color: var(--primary);
+      color: #2e7d32;
       cursor: pointer;
       box-shadow: 0 6px 0 #1b5e20;
       transition: all 0.15s;
@@ -199,7 +217,7 @@
 
     /* Container Utama */
     main {
-      max-width: 1150px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 0 16px;
     }
@@ -226,6 +244,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 14px;
+      color: #263238;
     }
 
     .api-info {
@@ -343,7 +362,7 @@
     /* Grid Kad Haiwan */
     .animal-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
     }
 
@@ -354,7 +373,7 @@
       box-shadow: var(--shadow);
       padding: 20px;
       position: relative;
-      transition: transform 0.25s, border-color 0.25s;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -364,6 +383,12 @@
     .animal-card:hover {
       transform: translateY(-6px);
       border-color: #ffb300;
+    }
+
+    .animal-card.playing-roar {
+      border-color: #ff4081;
+      box-shadow: 0 0 0 6px rgba(255, 64, 129, 0.28), var(--shadow);
+      animation: cardShake 0.45s ease-in-out infinite;
     }
 
     .card-top {
@@ -399,7 +424,7 @@
     /* Visual Haiwan: Gambar API Sebenar + Klik Buka Modal */
     .visual-stage {
       position: relative;
-      height: 180px;
+      height: 185px;
       border-radius: 18px;
       background: linear-gradient(135deg, #e8f5e9, #e0f7fa);
       display: flex;
@@ -438,11 +463,26 @@
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(4px);
       transition: transform 0.2s, background 0.2s;
+      z-index: 3;
     }
 
     .visual-stage:hover .zoom-hint-pill {
       background: #ff9800;
       transform: scale(1.06);
+    }
+
+    .sound-ready-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(233, 30, 99, 0.9);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 3;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     }
 
     .emoji-badge {
@@ -467,10 +507,6 @@
       transition: transform 0.2s;
     }
 
-    .visual-stage.jump {
-      animation: happyJump 0.6s ease;
-    }
-
     .animal-name {
       font-size: 1.45rem;
       color: var(--text-main);
@@ -485,6 +521,7 @@
       margin-bottom: 10px;
     }
 
+    /* Kotak Bunyi & Gelombang Audio Visualizer */
     .sound-bubble {
       background: #fff9c4;
       border: 2px dashed #fbc02d;
@@ -495,7 +532,40 @@
       color: #f57f17;
       margin-bottom: 10px;
       font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
     }
+
+    .sound-bubble:hover {
+      background: #fff176;
+      transform: scale(1.02);
+    }
+
+    .eq-bars {
+      display: none;
+      align-items: flex-end;
+      gap: 3px;
+      height: 16px;
+    }
+
+    .eq-bars.active {
+      display: inline-flex;
+    }
+
+    .eq-bar {
+      width: 4px;
+      background: #e91e63;
+      border-radius: 2px;
+      animation: eqBounce 0.45s infinite ease-in-out alternate;
+    }
+
+    .eq-bar:nth-child(2) { animation-delay: 0.15s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.3s; }
+    .eq-bar:nth-child(4) { animation-delay: 0.1s; }
 
     .fact-box {
       background: #f1f8e9;
@@ -521,14 +591,14 @@
     .card-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 9px;
     }
 
     .btn-action {
       font-family: 'Fredoka', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
-      padding: 10px 12px;
+      padding: 10px 10px;
       border-radius: 14px;
       border: none;
       cursor: pointer;
@@ -537,6 +607,14 @@
       justify-content: center;
       gap: 6px;
       transition: transform 0.12s;
+    }
+
+    .btn-roar {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #ec407a, #d81b60);
+      color: white;
+      box-shadow: 0 4px 0 #ad1457;
+      font-size: 0.98rem;
     }
 
     .btn-speak {
@@ -585,9 +663,10 @@
 
     .modal-card {
       background: #ffffff;
+      color: #263238;
       border: 5px solid #66bb6a;
       border-radius: 30px;
-      max-width: 720px;
+      max-width: 740px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
@@ -626,7 +705,7 @@
       position: relative;
       width: 100%;
       min-height: 250px;
-      max-height: 360px;
+      max-height: 370px;
       background: linear-gradient(135deg, #1b5e20, #81c784);
       display: flex;
       align-items: center;
@@ -637,7 +716,7 @@
 
     .modal-hero-img {
       width: 100%;
-      max-height: 360px;
+      max-height: 370px;
       object-fit: contain;
       background: #102a13;
       display: none;
@@ -673,6 +752,28 @@
       color: #607d8b;
       font-weight: 700;
       margin-bottom: 16px;
+    }
+
+    /* Kotak Pemain Audio Sebenar di dalam Modal */
+    .modal-audio-bar {
+      background: linear-gradient(135deg, #fce4ec, #fff8e1);
+      border: 3px solid #f48fb1;
+      border-radius: 20px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-audio-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: #880e4f;
     }
 
     .modal-meta-grid {
@@ -760,13 +861,14 @@
       align-items: center;
     }
 
-    /* Mod Kuiz */
+    /* Mod Kuiz & Mod Teka Bunyi */
     .quiz-box {
       background: white;
+      color: #263238;
       border-radius: 28px;
       border: 4px solid #ffcc80;
       box-shadow: var(--shadow);
-      max-width: 720px;
+      max-width: 740px;
       margin: 0 auto;
       padding: 28px;
       text-align: center;
@@ -790,7 +892,7 @@
 
     .quiz-question {
       font-size: 1.35rem;
-      color: var(--text-dark);
+      color: #263238;
       margin-bottom: 20px;
       line-height: 1.4;
     }
@@ -813,6 +915,7 @@
       border-radius: 18px;
       border: 3px solid #b0bec5;
       background: #fafafa;
+      color: #263238;
       cursor: pointer;
       box-shadow: 0 5px 0 #cfd8dc;
       transition: all 0.15s;
@@ -844,9 +947,37 @@
       min-height: 32px;
     }
 
+    /* Butang Speaker Besar untuk Mod Teka Bunyi */
+    .big-sound-mystery-btn {
+      margin: 16px auto 22px;
+      padding: 20px 34px;
+      border-radius: 26px;
+      border: 4px solid #f48fb1;
+      background: linear-gradient(135deg, #ec407a, #ab47bc);
+      color: white;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.35rem;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #880e4f;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.15s;
+    }
+
+    .big-sound-mystery-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .big-sound-mystery-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 3px 0 #880e4f;
+    }
+
     /* Mod Padankan Makanan */
     .feed-game-box {
       background: white;
+      color: #263238;
       border-radius: 28px;
       border: 4px solid #ce93d8;
       box-shadow: var(--shadow);
@@ -926,11 +1057,15 @@
       50% { transform: translateY(-6px); }
     }
 
-    @keyframes happyJump {
-      0%   { transform: scale(1) translateY(0); }
-      30%  { transform: scale(1.08) translateY(-12px) rotate(3deg); }
-      60%  { transform: scale(1.04) translateY(-6px) rotate(-3deg); }
-      100% { transform: scale(1) translateY(0); }
+    @keyframes cardShake {
+      0%, 100% { transform: translateY(-6px) rotate(0deg); }
+      25% { transform: translateY(-6px) rotate(-1.5deg); }
+      75% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+
+    @keyframes eqBounce {
+      0% { height: 4px; }
+      100% { height: 16px; }
     }
 
     @keyframes floatUp {
@@ -953,7 +1088,7 @@
 
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- MODAL POPUP GAMBAR BESAR & INFO LENGKAP -->
+  <!-- MODAL POPUP GAMBAR BESAR, BUNYI SEBENAR & INFO LENGKAP -->
   <div class="modal-overlay" id="animal-modal" onclick="handleOverlayClick(event)">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeAnimalModal()" title="Tutup">✕</button>
@@ -968,6 +1103,20 @@
         </div>
         <p class="modal-sci" id="modal-sci">Panthera tigris jacksoni</p>
 
+        <!-- BAR AUDIO BUNYI HAIWAN SEBENAR (WIKIMEDIA PUBLIC API + WEB AUDIO SYNTH) -->
+        <div class="modal-audio-bar">
+          <div class="modal-audio-info">
+            <span style="font-size: 1.8rem;">🐾</span>
+            <div>
+              <div id="modal-sound-label">Bunyi Haiwan Sebenar (Public API)</div>
+              <small id="modal-sound-status" style="color: #ad1457;">Klik butang di sebelah untuk dengar suara haiwan ini!</small>
+            </div>
+          </div>
+          <button class="btn-action btn-roar" id="modal-roar-btn" style="grid-column: auto; padding: 10px 18px;">
+            🔊 Mainkan Bunyi Haiwan!
+          </button>
+        </div>
+
         <div class="modal-meta-grid">
           <div class="modal-meta-item">
             <span class="modal-meta-label">📍 Habitat Utama</span>
@@ -978,7 +1127,7 @@
             <span class="modal-meta-val" id="modal-food">🥩 Daging Rusa</span>
           </div>
           <div class="modal-meta-item">
-            <span class="modal-meta-label">🔊 Bunyi / Aksi</span>
+            <span class="modal-meta-label">💬 Aksi / Slogan</span>
             <span class="modal-meta-val" id="modal-sound">AUMMM!</span>
           </div>
         </div>
@@ -995,7 +1144,7 @@
 
         <div class="modal-footer-actions">
           <button class="btn-action btn-speak" id="modal-speak-btn" style="padding: 12px 20px;">
-            🔊 Dengar Semua Info
+            🗣️ Bacakan Artikel (Suara)
           </button>
           <button class="btn-action btn-feed" onclick="closeAnimalModal()" style="padding: 12px 20px;">
             👍 Faham & Tutup
@@ -1009,10 +1158,10 @@
   <header>
     <div class="header-container">
       <div class="brand">
-        <div class="brand-logo">🐯</div>
+        <div class="brand-logo" onclick="playAnimalVoice(animals[0])" title="Klik saya untuk mengaum!">🐯</div>
         <div class="brand-title">
           <h1>Wild Wonders Malaysia</h1>
-          <p>Ensiklopedia Hidup & Kembara Sains Sekolah Rendah (KSSR)</p>
+          <p>Ensiklopedia Hidup, Bunyi Haiwan & Kembara Sains (KSSR)</p>
         </div>
       </div>
 
@@ -1026,7 +1175,8 @@
         <div class="badge-pill star-pill" id="star-pill">
           ⭐ <span id="star-count">0</span> Bintang
         </div>
-        <button class="sound-btn" id="toggle-sound" title="Buka/Tutup Bunyi">🔊</button>
+        <button class="icon-circle-btn" id="toggle-theme" title="Tukar Mod Siang / Malam Hutan">🌙</button>
+        <button class="icon-circle-btn" id="toggle-sound" title="Buka/Tutup Bunyi">🔊</button>
       </div>
     </div>
   </header>
@@ -1034,7 +1184,10 @@
   <!-- TAB MOD INTERAKTIF -->
   <nav class="mode-tabs">
     <button class="tab-btn active" onclick="switchMode('explore', this)">
-      🌿 Teroka & Carian API
+      🌿 Teroka & Bunyi Haiwan
+    </button>
+    <button class="tab-btn" onclick="switchMode('soundquiz', this)">
+      🎵 Teka Bunyi Haiwan
     </button>
     <button class="tab-btn" onclick="switchMode('quiz', this)">
       🎯 Kuiz Pintar (<span id="quiz-pool-count">70+</span> Soalan)
@@ -1045,16 +1198,16 @@
   </nav>
 
   <main>
-    <!-- MOD 1: TEROKA HABITAT + INTEGRASI PUBLIC API -->
+    <!-- MOD 1: TEROKA HABITAT + INTEGRASI PUBLIC API GAMBAR & AUDIO -->
     <section id="panel-explore" class="section-panel active">
 
-      <!-- BAR ENJIN PUBLIC API (WIKIPEDIA REST API) -->
+      <!-- BAR ENJIN PUBLIC API (WIKIPEDIA + WIKIMEDIA COMMONS AUDIO API) -->
       <div class="api-explorer-bar">
         <div class="api-info">
           <div class="api-info-icon">🌐</div>
           <div>
-            <h3>Teroka Haiwan Dunia & Malaysia (Live Public API)</h3>
-            <p>Klik pada gambar mana-mana haiwan untuk buka popup foto besar & baca artikel penuh dari Wikipedia API!</p>
+            <h3>Teroka Gambar & Bunyi Haiwan Dunia (Live Public API)</h3>
+            <p>Tekan butang <b>"🐾 Bunyi Haiwan"</b> untuk mendengar rakaman audio sebenar dari Wikimedia Commons API atau klik gambar untuk info penuh!</p>
           </div>
         </div>
         <div class="api-controls">
@@ -1083,7 +1236,32 @@
       <div class="animal-grid" id="animal-grid"></div>
     </section>
 
-    <!-- MOD 2: KUIZ CILIK (RAWAK & ANTI-BERULANG) -->
+    <!-- MOD 2: PERMAINAN MINI TEKA BUNYI HAIWAN -->
+    <section id="panel-soundquiz" class="section-panel">
+      <div class="quiz-box" style="border-color: #f48fb1;">
+        <div class="quiz-progress" style="color: #ad1457;">
+          <span>🎧 Cabaran Deria Pendengaran Renjer</span>
+          <span id="sound-quiz-streak">🔥 Kombo Bunyi: 0</span>
+        </div>
+        <h2 style="color: #880e4f; margin-bottom: 6px;">🎵 Siapakah Yang Berbunyi Itu?</h2>
+        <p style="font-weight: 700; color: #546e7a;">
+          Tekan butang pembesar suara di bawah untuk mendengar rakaman bunyi haiwan dan teka pemilik suaranya!
+        </p>
+
+        <button class="big-sound-mystery-btn" onclick="playMysteryAnimalSound()">
+          🔊 Mainkan Bunyi Misteri!
+        </button>
+
+        <p id="sound-clue-text" style="font-weight: 800; color: #d81b60; margin-bottom: 16px;">
+          (Petunjuk: Klik butang di atas untuk dengar!)
+        </p>
+
+        <div class="quiz-options" id="sound-quiz-options"></div>
+        <div class="quiz-feedback" id="sound-quiz-feedback"></div>
+      </div>
+    </section>
+
+    <!-- MOD 3: KUIZ CILIK (RAWAK & ANTI-BERULANG) -->
     <section id="panel-quiz" class="section-panel">
       <div class="quiz-box">
         <div class="quiz-progress">
@@ -1097,7 +1275,7 @@
       </div>
     </section>
 
-    <!-- MOD 3: SUAP MAKANAN (HERBIVOR / KARNIVOR / OMNIVOR) -->
+    <!-- MOD 4: SUAP MAKANAN (HERBIVOR / KARNIVOR / OMNIVOR) -->
     <section id="panel-feed" class="section-panel">
       <div class="feed-game-box">
         <h2 style="color: #6a1b9a; margin-bottom: 6px;">🍽️ Cabaran Diet Haiwan!</h2>
@@ -1138,13 +1316,15 @@
 
   <script>
     // =========================================================================
-    // 1. PANGKALAN DATA 16 HAIWAN UTAMA + INTEGRASI PUBLIC API (WIKIPEDIA MS)
+    // 1. PANGKALAN DATA 16 HAIWAN UTAMA + INTEGRASI PUBLIC API GAMBAR & AUDIO
     // =========================================================================
     const animals = [
       {
         id: 'harimau',
         name: 'Harimau Malaya',
         wikiTitle: 'Harimau_Malaya',
+        soundQuery: 'Panthera tigris roar',
+        synthProfile: 'roar',
         sci: 'Panthera tigris jacksoni',
         emoji: '🐯',
         habitat: 'Hutan Hujan',
@@ -1157,6 +1337,8 @@
         id: 'orangutan',
         name: 'Orang Utan Borneo',
         wikiTitle: 'Orang_utan',
+        soundQuery: 'Pongo pygmaeus',
+        synthProfile: 'monkey',
         sci: 'Pongo pygmaeus',
         emoji: '🦧',
         habitat: 'Hutan Hujan',
@@ -1169,6 +1351,8 @@
         id: 'tapir',
         name: 'Tapir Malaya',
         wikiTitle: 'Tapir_Malaya',
+        soundQuery: 'Tapirus',
+        synthProfile: 'whistle',
         sci: 'Tapirus indicus',
         emoji: '🐼',
         habitat: 'Hutan Hujan',
@@ -1181,6 +1365,8 @@
         id: 'enggang',
         name: 'Burung Enggang Badak',
         wikiTitle: 'Enggang_Badak',
+        soundQuery: 'Buceros',
+        synthProfile: 'bird',
         sci: 'Buceros rhinoceros',
         emoji: '🦜',
         habitat: 'Udara & Kanopi',
@@ -1193,6 +1379,8 @@
         id: 'penyu',
         name: 'Penyu Agar',
         wikiTitle: 'Penyu_agar',
+        soundQuery: 'sea water waves splash',
+        synthProfile: 'splash',
         sci: 'Chelonia mydas',
         emoji: '🐢',
         habitat: 'Sungai & Laut',
@@ -1205,6 +1393,8 @@
         id: 'gajah',
         name: 'Gajah Pygmy Borneo',
         wikiTitle: 'Gajah_Borneo',
+        soundQuery: 'Elephant trumpet',
+        synthProfile: 'trumpet',
         sci: 'Elephas maximus borneensis',
         emoji: '🐘',
         habitat: 'Hutan Hujan',
@@ -1217,6 +1407,8 @@
         id: 'beruang',
         name: 'Beruang Madu',
         wikiTitle: 'Beruang_madu',
+        soundQuery: 'Bear growl',
+        synthProfile: 'roar',
         sci: 'Helarctos malayanus',
         emoji: '🐻',
         habitat: 'Hutan Hujan',
@@ -1229,6 +1421,8 @@
         id: 'bekantan',
         name: 'Monyet Belanda (Proboscis)',
         wikiTitle: 'Monyet_Belanda',
+        soundQuery: 'Monkey call',
+        synthProfile: 'monkey',
         sci: 'Nasalis larvatus',
         emoji: '🐒',
         habitat: 'Hutan Hujan',
@@ -1241,6 +1435,8 @@
         id: 'kancil',
         name: 'Pelanduk / Sang Kancil',
         wikiTitle: 'Kancil',
+        soundQuery: 'Deer call',
+        synthProfile: 'whistle',
         sci: 'Tragulus kanchil',
         emoji: '🦌',
         habitat: 'Hutan Hujan',
@@ -1253,6 +1449,8 @@
         id: 'buaya',
         name: 'Buaya Tembaga',
         wikiTitle: 'Buaya_tembaga',
+        soundQuery: 'Alligator bellow',
+        synthProfile: 'roar',
         sci: 'Crocodylus porosus',
         emoji: '🐊',
         habitat: 'Sungai & Laut',
@@ -1265,6 +1463,8 @@
         id: 'dugong',
         name: 'Dugong',
         wikiTitle: 'Dugong',
+        soundQuery: 'Manatee sound',
+        synthProfile: 'splash',
         sci: 'Dugong dugon',
         emoji: '🦭',
         habitat: 'Sungai & Laut',
@@ -1277,6 +1477,8 @@
         id: 'seladang',
         name: 'Seladang Malaya',
         wikiTitle: 'Seladang',
+        soundQuery: 'Cattle moo',
+        synthProfile: 'trumpet',
         sci: 'Bos gaurus',
         emoji: '🦬',
         habitat: 'Hutan Hujan',
@@ -1289,6 +1491,8 @@
         id: 'tenggiling',
         name: 'Tenggiling Sunda',
         wikiTitle: 'Tenggiling_Sunda',
+        soundQuery: 'Hedgehog sound',
+        synthProfile: 'whistle',
         sci: 'Manis javanica',
         emoji: '🦔',
         habitat: 'Hutan Hujan',
@@ -1301,6 +1505,8 @@
         id: 'helang',
         name: 'Helang Merah (Langkawi)',
         wikiTitle: 'Helang_Merah',
+        soundQuery: 'Hawk call',
+        synthProfile: 'bird',
         sci: 'Haliastur indus',
         emoji: '🦅',
         habitat: 'Udara & Kanopi',
@@ -1313,6 +1519,8 @@
         id: 'kubung',
         name: 'Kubung Sunda (Lemur Terbang)',
         wikiTitle: 'Kubung_Sunda',
+        soundQuery: 'Bat echolocation',
+        synthProfile: 'whistle',
         sci: 'Galeopterus variegatus',
         emoji: '🦇',
         habitat: 'Udara & Kanopi',
@@ -1325,6 +1533,8 @@
         id: 'jerung',
         name: 'Yu Paus (Whale Shark)',
         wikiTitle: 'Yu_paus',
+        soundQuery: 'Underwater bubbles',
+        synthProfile: 'splash',
         sci: 'Rhincodon typus',
         emoji: '🦈',
         habitat: 'Sungai & Laut',
@@ -1336,27 +1546,226 @@
     ];
 
     const randomAPIPool = [
-      { query: 'Singa', emoji: '🦁', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🥩 Daging Zebra & Rusa' },
-      { query: 'Zirafah', emoji: '🦒', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌿 Daun Pokok Akasia Tinggi' },
-      { query: 'Kuda_belang', emoji: '🦓', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌾 Rumput Segar Savana' },
-      { query: 'Ikan_lumba-lumba', emoji: '🐬', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🐟 Ikan Kecil & Sotong' },
-      { query: 'Paus_biru', emoji: '🐋', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🦐 Kril & Plankton Laut' },
-      { query: 'Penguin', emoji: '🐧', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🐟 Ikan Laut Sejuk' },
-      { query: 'Kanggaru', emoji: '🦘', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌱 Rumput & Pucuk Tumbuhan' },
-      { query: 'Koala', emoji: '🐨', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🍃 Daun Kayu Putih (Eucalyptus)' },
-      { query: 'Burung_hantu', emoji: '🦉', diet: 'Karnivor', habitat: 'Udara & Kanopi', favFood: '🐁 Tikus & Serangga Malam' },
-      { query: 'Kucing', emoji: '🐱', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🐟 Ikan Segar & Daging' },
-      { query: 'Arnab', emoji: '🐰', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🥕 Lobak Merah & Sayur Hijau' },
-      { query: 'Katak', emoji: '🐸', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🪰 Lalat, Nyamuk & Serangga' },
-      { query: 'Lebah_madu', emoji: '🐝', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🌺 Nektar & Debunga' },
-      { query: 'Rama-rama', emoji: '🦋', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🌸 Manisan Bunga Segar' },
-      { query: 'Sotong_kurita', emoji: '🐙', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🦀 Ketam, Udang & Kerang' }
+      { query: 'Singa', soundQuery: 'Lion roar', synthProfile: 'roar', emoji: '🦁', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🥩 Daging Zebra & Rusa' },
+      { query: 'Zirafah', soundQuery: 'Giraffe', synthProfile: 'trumpet', emoji: '🦒', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌿 Daun Pokok Akasia Tinggi' },
+      { query: 'Kuda_belang', soundQuery: 'Horse whinny', synthProfile: 'whistle', emoji: '🦓', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌾 Rumput Segar Savana' },
+      { query: 'Ikan_lumba-lumba', soundQuery: 'Dolphin clicks', synthProfile: 'whistle', emoji: '🐬', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🐟 Ikan Kecil & Sotong' },
+      { query: 'Paus_biru', soundQuery: 'Humpback whale song', synthProfile: 'trumpet', emoji: '🐋', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🦐 Kril & Plankton Laut' },
+      { query: 'Penguin', soundQuery: 'Penguin call', synthProfile: 'bird', emoji: '🐧', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🐟 Ikan Laut Sejuk' },
+      { query: 'Kanggaru', soundQuery: 'Kangaroo', synthProfile: 'monkey', emoji: '🦘', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🌱 Rumput & Pucuk Tumbuhan' },
+      { query: 'Koala', soundQuery: 'Koala', synthProfile: 'roar', emoji: '🐨', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🍃 Daun Kayu Putih (Eucalyptus)' },
+      { query: 'Burung_hantu', soundQuery: 'Owl hoot', synthProfile: 'bird', emoji: '🦉', diet: 'Karnivor', habitat: 'Udara & Kanopi', favFood: '🐁 Tikus & Serangga Malam' },
+      { query: 'Kucing', soundQuery: 'Cat meow', synthProfile: 'whistle', emoji: '🐱', diet: 'Karnivor', habitat: 'Hutan Hujan', favFood: '🐟 Ikan Segar & Daging' },
+      { query: 'Arnab', soundQuery: 'Rabbit', synthProfile: 'whistle', emoji: '🐰', diet: 'Herbivor', habitat: 'Hutan Hujan', favFood: '🥕 Lobak Merah & Sayur Hijau' },
+      { query: 'Katak', soundQuery: 'Frog croak', synthProfile: 'monkey', emoji: '🐸', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🪰 Lalat, Nyamuk & Serangga' },
+      { query: 'Lebah_madu', soundQuery: 'Bee buzz', synthProfile: 'roar', emoji: '🐝', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🌺 Nektar & Debunga' },
+      { query: 'Rama-rama', soundQuery: 'Forest birds', synthProfile: 'bird', emoji: '🦋', diet: 'Herbivor', habitat: 'Udara & Kanopi', favFood: '🌸 Manisan Bunga Segar' },
+      { query: 'Sotong_kurita', soundQuery: 'Water splash', synthProfile: 'splash', emoji: '🐙', diet: 'Karnivor', habitat: 'Sungai & Laut', favFood: '🦀 Ketam, Udang & Kerang' }
     ];
 
     let activeFilter = 'Semua';
+    let currentPlayingAudio = null;
 
     // =========================================================================
-    // 2. FUNGSI FETCH PUBLIC API & MODAL POPUP INFO TERPERINCI
+    // 2. PUBLIC API BUNYI HAIWAN (WIKIMEDIA COMMONS AUDIO API + SYNTH FALLBACK)
+    // =========================================================================
+    // Mencari fail audio sebenar (.ogg / .mp3 / .wav) daripada Wikimedia Commons Public API
+    async function fetchRealAnimalAudioFromAPI(animal) {
+      if (animal.audioUrl) return animal.audioUrl;
+      const query = animal.soundQuery || animal.sci || animal.name;
+      try {
+        const searchUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query + ' filetype:audio')}&srnamespace=6&srlimit=3&format=json&origin=*`;
+        const res = await fetch(searchUrl);
+        const data = await res.json();
+        const results = data?.query?.search || [];
+        if (results.length > 0) {
+          const fileTitle = results[0].title;
+          const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+          const infoRes = await fetch(infoUrl);
+          const infoData = await infoRes.json();
+          const pages = infoData?.query?.pages || {};
+          const pageObj = Object.values(pages)[0];
+          const directUrl = pageObj?.imageinfo?.[0]?.url;
+          if (directUrl) {
+            animal.audioUrl = directUrl;
+            return directUrl;
+          }
+        }
+      } catch (err) {
+        // Fallback kepada Web Audio Synthesizer jika tiada internet
+      }
+      return null;
+    }
+
+    // Synthesizer Bunyi Haiwan Web Audio API (dijana secara masa nyata supaya dijamin 100% berbunyi!)
+    function playSynthesizedAnimalCall(profile = 'roar') {
+      if (!soundEnabled) return;
+      initAudio();
+      const now = audioCtx.currentTime;
+
+      if (profile === 'roar') {
+        // Ngauman Harimau / Beruang / Buaya (Sawtooth rendah + modulasi kasar)
+        const osc = audioCtx.createOscillator();
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(65, now + 0.85);
+
+        lfo.frequency.setValueAtTime(28, now);
+        lfoGain.gain.setValueAtTime(35, now);
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        lfo.start(now);
+        osc.stop(now + 0.9);
+        lfo.stop(now + 0.9);
+      } else if (profile === 'bird') {
+        // Kicauan Burung Enggang / Helang
+        [0, 0.22, 0.45].forEach((offset, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1400 + i * 250, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(2600, now + offset + 0.12);
+          osc.frequency.exponentialRampToValueAtTime(1100, now + offset + 0.18);
+          gain.gain.setValueAtTime(0.22, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.19);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.19);
+        });
+      } else if (profile === 'trumpet') {
+        // Tempikan Gajah / Seladang / Paus
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(620, now + 0.25);
+        osc.frequency.exponentialRampToValueAtTime(480, now + 0.75);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.8);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.8);
+      } else if (profile === 'monkey') {
+        // Orang Utan / Monyet Belanda ("UU-AA-UU!")
+        [0, 0.22, 0.44, 0.66].forEach((offset, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          const base = idx % 2 === 0 ? 340 : 580;
+          osc.frequency.setValueAtTime(base, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(base * 1.35, now + offset + 0.16);
+          gain.gain.setValueAtTime(0.24, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + offset + 0.18);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.18);
+        });
+      } else if (profile === 'splash') {
+        // Kocakan Air Laut & Gelembung (Penyu / Dugong / Yu Paus)
+        [0, 0.1, 0.2, 0.32, 0.46].forEach((offset, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(300 + idx * 140, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(900 + idx * 120, now + offset + 0.09);
+          gain.gain.setValueAtTime(0.18, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.1);
+        });
+      } else {
+        // Wisel Tapir / Kancil / Lumba-lumba
+        [0, 0.25].forEach((offset) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1800, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(950, now + offset + 0.2);
+          gain.gain.setValueAtTime(0.2, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.22);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.22);
+        });
+      }
+    }
+
+    // Fungsi Utama: Mainkan Bunyi Haiwan (Cuba Fail Audio Public API Dahulu -> Sintetik Web Audio)
+    async function playAnimalVoice(animalOrId, statusElId = null) {
+      const animal = typeof animalOrId === 'string'
+        ? animals.find(a => a.id === animalOrId)
+        : animalOrId;
+      if (!animal || !soundEnabled) return;
+
+      // Hentikan audio terdahulu jika sedang dimainkan
+      if (currentPlayingAudio) {
+        currentPlayingAudio.pause();
+        currentPlayingAudio = null;
+      }
+
+      const cardEl = document.getElementById(`card-${animal.id}`);
+      const eqEl = document.getElementById(`eq-${animal.id}`);
+      const modalStatus = statusElId ? document.getElementById(statusElId) : null;
+
+      if (cardEl) cardEl.classList.add('playing-roar');
+      if (eqEl) eqEl.classList.add('active');
+      if (modalStatus) modalStatus.textContent = '⏳ Memuatkan audio sebenar daripada Wikimedia Commons API...';
+
+      // Mainkan sintetik segera supaya tiada kelewatan (instant feedback untuk kanak-kanak)
+      playSynthesizedAnimalCall(animal.synthProfile || 'roar');
+
+      // Cuba dapatkan fail audio sebenar dari Wikimedia Commons Public API
+      const realAudioUrl = await fetchRealAnimalAudioFromAPI(animal);
+      if (realAudioUrl && soundEnabled) {
+        try {
+          const audio = new Audio(realAudioUrl);
+          currentPlayingAudio = audio;
+          if (modalStatus) modalStatus.textContent = '🎶 Sedang memainkan rakaman bunyi sebenar (Wikimedia Commons API)!';
+          await audio.play();
+          audio.onended = () => {
+            if (cardEl) cardEl.classList.remove('playing-roar');
+            if (eqEl) eqEl.classList.remove('active');
+            if (modalStatus) modalStatus.textContent = '✅ Rakaman bunyi selesai dimainkan!';
+          };
+          setTimeout(() => {
+            if (!audio.paused) {
+              audio.pause();
+              if (cardEl) cardEl.classList.remove('playing-roar');
+              if (eqEl) eqEl.classList.remove('active');
+            }
+          }, 6500);
+          return;
+        } catch (e) {
+          // Jika pelayar menyekat format, kekalkan bunyi sintetik tadi
+        }
+      }
+
+      if (modalStatus) modalStatus.textContent = '🎵 Bunyi sintetik haiwan dimainkan (Web Audio Synthesizer)!';
+      setTimeout(() => {
+        if (cardEl) cardEl.classList.remove('playing-roar');
+        if (eqEl) eqEl.classList.remove('active');
+      }, 1100);
+    }
+
+    // =========================================================================
+    // 3. FUNGSI FETCH GAMBAR PUBLIC API & MODAL POPUP INFO TERPERINCI
     // =========================================================================
     async function hydrateImagesFromPublicAPI() {
       for (const animal of animals) {
@@ -1384,7 +1793,6 @@
       }
     }
 
-    // Buka Modal Popup apabila pengguna klik pada gambar haiwan
     async function openAnimalModal(animalId) {
       const animal = animals.find(a => a.id === animalId);
       if (!animal) return;
@@ -1404,11 +1812,11 @@
       document.getElementById('modal-food').textContent = animal.favFood;
       document.getElementById('modal-sound').textContent = animal.soundText;
       document.getElementById('modal-short-fact').textContent = animal.fact;
+      document.getElementById('modal-sound-status').textContent = 'Klik butang untuk dengar rakaman suara haiwan ini!';
 
       dietBadge.textContent = animal.diet;
       dietBadge.className = `diet-tag diet-${animal.diet}`;
 
-      // Papar gambar resolusi tinggi jika ada, atau fallback kepada emoji
       const bestPhoto = animal.highResImg || animal.imgUrl;
       if (bestPhoto) {
         modalImg.src = bestPhoto;
@@ -1421,10 +1829,14 @@
         modalEmoji.style.display = 'block';
       }
 
+      document.getElementById('modal-roar-btn').onclick = () => {
+        addStars(5);
+        playAnimalVoice(animal, 'modal-sound-status');
+      };
+
       fullExtractEl.textContent = animal.fullExtract || '⏳ Sedang memuat turun maklumat penuh daripada Wikipedia Bahasa Melayu Public API...';
       modalEl.classList.add('open');
 
-      // Tarik teks artikel lebih panjang daripada Wikipedia Action API jika belum ada
       if (!animal.longWikiText && animal.wikiTitle) {
         try {
           const url = `https://ms.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=false&exchars=1100&explaintext=true&titles=${encodeURIComponent(animal.wikiTitle)}&format=json&origin=*`;
@@ -1443,7 +1855,6 @@
       const finalArticle = animal.longWikiText || animal.fullExtract || animal.fact;
       fullExtractEl.textContent = finalArticle;
 
-      // Butang suara dalam modal
       document.getElementById('modal-speak-btn').onclick = () => {
         speakFact(`${animal.name}. ${animal.fact}. ${finalArticle}`);
       };
@@ -1454,6 +1865,9 @@
       document.getElementById('animal-modal').classList.remove('open');
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+      }
+      if (currentPlayingAudio) {
+        currentPlayingAudio.pause();
       }
     }
 
@@ -1467,7 +1881,6 @@
       if (e.key === 'Escape') closeAnimalModal();
     });
 
-    // Cari apa-apa haiwan terus dari Wikipedia Bahasa Melayu Public API
     async function searchAnimalFromAPI(customMeta = null) {
       const inputEl = document.getElementById('api-search-input');
       const statusEl = document.getElementById('api-status');
@@ -1481,7 +1894,7 @@
       sfxPop();
       statusEl.style.display = 'block';
       statusEl.style.color = '#e65100';
-      statusEl.textContent = `⏳ Sedang memanggil data "${rawQuery.replace(/_/g, ' ')}" daripada Public API...`;
+      statusEl.textContent = `⏳ Sedang memanggil data & bunyi "${rawQuery.replace(/_/g, ' ')}" daripada Public API...`;
 
       try {
         const searchUrl = `https://ms.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(rawQuery)}&limit=1&namespace=0&format=json&origin=*`;
@@ -1515,11 +1928,14 @@
         }
 
         let guessedHabitat = customMeta?.habitat || 'Hutan Hujan';
+        let guessedSynth = customMeta?.synthProfile || 'roar';
         if (!customMeta) {
           if (lowerText.includes('laut') || lowerText.includes('air') || lowerText.includes('sungai') || lowerText.includes('ikan')) {
             guessedHabitat = 'Sungai & Laut';
+            guessedSynth = 'splash';
           } else if (lowerText.includes('terbang') || lowerText.includes('burung') || lowerText.includes('sayap')) {
             guessedHabitat = 'Udara & Kanopi';
+            guessedSynth = 'bird';
           }
         }
 
@@ -1528,11 +1944,13 @@
           id: newId,
           name: data.title || rawQuery,
           wikiTitle: bestTitle,
+          soundQuery: customMeta?.soundQuery || `${bestTitle} animal sound`,
+          synthProfile: guessedSynth,
           sci: data.description || 'Spesies Terokaan Public API',
           emoji: customMeta?.emoji || '🐾',
           habitat: guessedHabitat,
           diet: guessedDiet,
-          soundText: '✨ Klik gambar saya untuk info penuh!',
+          soundText: '🔊 Klik untuk dengar bunyi saya!',
           favFood: guessedFood,
           fact: shortFact,
           fullExtract: fullText,
@@ -1552,7 +1970,7 @@
         if (!customMeta) inputEl.value = '';
 
         statusEl.style.color = '#2e7d32';
-        statusEl.textContent = `✅ Berjaya! "${newAnimal.name}" ditambah. Klik gambarnya untuk buka popup info penuh! (+15 ⭐)`;
+        statusEl.textContent = `✅ Berjaya! "${newAnimal.name}" ditambah lengkap dengan bunyi & gambar Public API! (+15 ⭐)`;
       } catch (err) {
         sfxWrong();
         statusEl.style.color = '#c62828';
@@ -1576,7 +1994,7 @@
     }
 
     // =========================================================================
-    // 3. WEB AUDIO API (BUNYI TANPA FAIL LUARAN)
+    // 4. WEB AUDIO API KESAN UI & TEMA SIANG/MALAM
     // =========================================================================
     let soundEnabled = true;
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1623,18 +2041,27 @@
     document.getElementById('toggle-sound').addEventListener('click', (e) => {
       soundEnabled = !soundEnabled;
       e.target.textContent = soundEnabled ? '🔊' : '🔇';
-      if (!soundEnabled && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+      if (!soundEnabled) {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (currentPlayingAudio) currentPlayingAudio.pause();
       }
     });
 
+    document.getElementById('toggle-theme').addEventListener('click', (e) => {
+      sfxPop();
+      document.body.classList.toggle('night-mode');
+      const isNight = document.body.classList.contains('night-mode');
+      e.target.textContent = isNight ? '☀️' : '🌙';
+    });
+
     // =========================================================================
-    // 4. SISTEM BINTANG & PANGKAT RENJER CILIK
+    // 5. SISTEM BINTANG (DENGAN SIMPANAN LOCALSTORAGE)
     // =========================================================================
-    let stars = 0;
+    let stars = Number(localStorage.getItem('wildWondersStars') || 0);
 
     function addStars(amount) {
       stars += amount;
+      localStorage.setItem('wildWondersStars', stars);
       const starEl = document.getElementById('star-count');
       const pillEl = document.getElementById('star-pill');
       starEl.textContent = stars;
@@ -1652,7 +2079,7 @@
     }
 
     // =========================================================================
-    // 5. RENDER KAD TEROKA HABITAT (KLIK GAMBAR -> BUKA MODAL INFO)
+    // 6. RENDER KAD TEROKA HABITAT (DENGAN BUTANG BUNYI HAIWAN & MODAL)
     // =========================================================================
     const gridEl = document.getElementById('animal-grid');
 
@@ -1667,6 +2094,7 @@
       filtered.forEach(animal => {
         const card = document.createElement('div');
         card.className = 'animal-card';
+        card.id = `card-${animal.id}`;
 
         const safeFact = animal.fact.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const safeName = animal.name.replace(/'/g, "\\'");
@@ -1680,6 +2108,7 @@
             </div>
             <div class="visual-stage" onclick="openAnimalModal('${animal.id}')" title="Klik untuk besarkan gambar & baca info penuh!">
               <span class="zoom-hint-pill">🔍 Klik Info & Gambar</span>
+              <span class="sound-ready-pill">🎵 Audio API</span>
               <img
                 id="img-${animal.id}"
                 class="animal-photo"
@@ -1692,8 +2121,14 @@
             </div>
             <h3 class="animal-name">${animal.name}</h3>
             <p class="animal-sci">${animal.sci}</p>
-            <div class="sound-bubble" id="bubble-${animal.id}">
-              💬 "${animal.soundText}"
+            <div class="sound-bubble" id="bubble-${animal.id}" onclick="playAnimalVoice('${animal.id}')" title="Klik untuk dengar bunyi haiwan!">
+              <span>💬 "${animal.soundText}"</span>
+              <span class="eq-bars" id="eq-${animal.id}">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+              </span>
             </div>
             <div class="fact-box">
               ${animal.isFromAPI ? '<span class="api-live-badge">🌐 DATA LIVE PUBLIC API</span><br/>' : ''}
@@ -1701,8 +2136,11 @@
             </div>
           </div>
           <div class="card-actions">
+            <button class="btn-action btn-roar" onclick="playAnimalVoice('${animal.id}'); addStars(5);">
+              🐾 Dengar Bunyi Haiwan!
+            </button>
             <button class="btn-action btn-speak" onclick="speakFact('${safeName}. ${safeFact}')">
-              🔊 Dengar Fakta
+              🗣️ Baca Fakta
             </button>
             <button class="btn-action btn-feed" onclick="feedCardAnimal(event, '${animal.id}', '${safeFood}')">
               🍎 Beri Makan
@@ -1728,7 +2166,7 @@
       addStars(10);
       const bubble = document.getElementById(`bubble-${id}`);
       if (bubble) {
-        bubble.textContent = `😋 "Sedapnya ${favFood}! Terima kasih kawan!"`;
+        bubble.innerHTML = `<span>😋 "Sedapnya ${favFood}! Terima kasih!"</span>`;
       }
 
       const card = event.target.closest('.animal-card');
@@ -1757,7 +2195,66 @@
     }
 
     // =========================================================================
-    // 6. MOD KUIZ CILIK (DYNAMIC GENERATOR 70+ SOALAN + ANTI-BERULANG)
+    // 7. MOD PERMAINAN MINI: TEKA BUNYI HAIWAN (AUDIO MYSTERY GAME)
+    // =========================================================================
+    let mysteryAnimal = animals[0];
+    let soundStreak = 0;
+
+    function loadSoundQuizQuestion() {
+      const shuffled = shuffleArray(animals);
+      mysteryAnimal = shuffled[0];
+      const choices = shuffleArray(shuffled.slice(0, 4));
+
+      document.getElementById('sound-quiz-streak').textContent = `🔥 Kombo Bunyi: ${soundStreak}`;
+      document.getElementById('sound-clue-text').textContent = `Petunjuk Slogan: "${mysteryAnimal.soundText}"`;
+      document.getElementById('sound-quiz-feedback').textContent = '';
+
+      const container = document.getElementById('sound-quiz-options');
+      container.innerHTML = '';
+
+      choices.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt-btn';
+        btn.textContent = `${item.emoji} ${item.name}`;
+        btn.dataset.correct = (item.id === mysteryAnimal.id);
+        btn.onclick = () => checkSoundQuizAnswer(item.id === mysteryAnimal.id, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function playMysteryAnimalSound() {
+      playAnimalVoice(mysteryAnimal);
+    }
+
+    function checkSoundQuizAnswer(isCorrect, btnEl) {
+      const allBtns = document.querySelectorAll('#sound-quiz-options .quiz-opt-btn');
+      allBtns.forEach(b => b.disabled = true);
+      const fb = document.getElementById('sound-quiz-feedback');
+
+      if (isCorrect) {
+        btnEl.classList.add('correct');
+        sfxCorrect();
+        soundStreak++;
+        addStars(20);
+        launchConfetti();
+        fb.style.color = '#2e7d32';
+        fb.textContent = `🎉 Telinga Tajam! Itu memang suara ${mysteryAnimal.name}! (+20 ⭐)`;
+      } else {
+        btnEl.classList.add('wrong');
+        allBtns.forEach(b => {
+          if (b.dataset.correct === 'true') b.classList.add('correct');
+        });
+        sfxWrong();
+        soundStreak = 0;
+        fb.style.color = '#c62828';
+        fb.textContent = `🙈 Hampir tepat! Itu sebenarnya bunyi ${mysteryAnimal.emoji} ${mysteryAnimal.name}.`;
+      }
+
+      setTimeout(loadSoundQuizQuestion, 2300);
+    }
+
+    // =========================================================================
+    // 8. MOD KUIZ CILIK (DYNAMIC GENERATOR 70+ SOALAN + ANTI-BERULANG)
     // =========================================================================
     const extraStaticQuestions = [
       {
@@ -1895,7 +2392,7 @@
     }
 
     function checkAnswer(isCorrect, btnEl) {
-      const allBtns = document.querySelectorAll('.quiz-opt-btn');
+      const allBtns = document.querySelectorAll('#quiz-options .quiz-opt-btn');
       allBtns.forEach(b => b.disabled = true);
 
       const feedbackEl = document.getElementById('quiz-feedback');
@@ -1946,7 +2443,7 @@
     }
 
     // =========================================================================
-    // 7. MOD SUAP MAKANAN (ANTI-ULANG BERTURUT-TURUT)
+    // 9. MOD SUAP MAKANAN (ANTI-ULANG BERTURUT-TURUT)
     // =========================================================================
     let currentHungryAnimal = animals[0];
 
@@ -1965,7 +2462,7 @@
       const emojiEl = document.getElementById('hungry-emoji');
 
       if (chosenDiet === currentHungryAnimal.diet) {
-        sfxCorrect();
+        playAnimalVoice(currentHungryAnimal);
         addStars(15);
         launchConfetti();
         emojiEl.style.transform = 'scale(1.3) rotate(10deg)';
@@ -1982,7 +2479,7 @@
     }
 
     // =========================================================================
-    // 8. TUKAR TAB & KONFETI HTML5 CANVAS
+    // 10. TUKAR TAB & KONFETI HTML5 CANVAS
     // =========================================================================
     function switchMode(mode, btnEl) {
       sfxPop();
@@ -2034,9 +2531,11 @@
     }
 
     // Mulakan Aplikasi
+    addStars(0);
     updateCounters();
     renderAnimals();
     hydrateImagesFromPublicAPI();
+    loadSoundQuizQuestion();
     startNewQuizRound();
     nextHungryAnimal();
     updateConfetti();
